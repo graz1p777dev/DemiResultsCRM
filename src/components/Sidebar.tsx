@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 import { ROLE_LABELS } from '@/lib/constants'
@@ -14,14 +15,31 @@ function isActiveLink(pathname: string, href: string, exact?: boolean): boolean 
   return pathname === href || pathname.startsWith(href + '/')
 }
 
-export default function Sidebar() {
+interface SidebarProps {
+  mobileOpen?: boolean
+  onClose?: () => void
+}
+
+export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname()
   const { user, signOut } = useAuth()
   const role = user?.role as UserRole | undefined
 
+  // На мобильном: закрывать drawer при переходе на другую страницу
+  useEffect(() => {
+    onClose?.()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
+
   return (
     <aside
-      className="flex flex-col flex-shrink-0 sticky top-0 h-screen overflow-hidden"
+      className={cn(
+        'flex flex-col flex-shrink-0 h-screen overflow-hidden',
+        // Мобильный: фиксированный drawer, скрыт за левым краем; десктоп: обычный sticky
+        'fixed inset-y-0 left-0 z-50 transition-transform duration-200 ease-out',
+        'md:sticky md:top-0 md:z-auto md:translate-x-0 md:transition-none',
+        mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full',
+      )}
       style={{ width: 192, backgroundColor: '#0c1f33' }}
     >
       {/* Логотип */}

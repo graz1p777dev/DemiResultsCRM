@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import Sidebar from '@/components/Sidebar'
 import Topbar from '@/components/layout/Topbar'
@@ -8,6 +8,7 @@ import { stopImpersonation } from '@/actions/auth'
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const { user, impersonating } = useAuth()
   const [pending, startTransition] = useTransition()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   // Сессия истекла прямо во время работы пользователя — перенаправляем на логин.
   // При первом рендере user всегда установлен (данные пришли с сервера),
@@ -29,7 +30,15 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
   return (
     <div className="flex min-h-screen" style={{ backgroundColor: '#f5f6f8' }}>
-      <Sidebar />
+      {/* Затемнение под мобильным drawer */}
+      {menuOpen && (
+        <div
+          className="fixed inset-0 z-40 md:hidden"
+          style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
+      <Sidebar mobileOpen={menuOpen} onClose={() => setMenuOpen(false)} />
       <div className="flex-1 flex flex-col min-w-0">
         {impersonating && (
           <div
@@ -49,7 +58,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             </button>
           </div>
         )}
-        <Topbar />
+        <Topbar onMenuClick={() => setMenuOpen(true)} />
         <main className="flex-1 min-w-0">
           {children}
         </main>

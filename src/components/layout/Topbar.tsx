@@ -1,7 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState, useMemo } from 'react'
-import { Bell } from 'lucide-react'
+import { Bell, Menu } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { createClient } from '@/lib/supabase/client'
@@ -33,7 +33,7 @@ function getPageTitle(pathname: string): string {
   return 'Страница'
 }
 
-export default function Topbar() {
+export default function Topbar({ onMenuClick }: { onMenuClick?: () => void }) {
   const pathname = usePathname()
   const { user } = useAuth()
   const [unreadCount, setUnreadCount] = useState(0)
@@ -87,6 +87,17 @@ export default function Topbar() {
         zIndex: 10,
       }}
     >
+      {/* Гамбургер — только мобильный */}
+      <button
+        onClick={onMenuClick}
+        className="md:hidden flex items-center justify-center rounded-md flex-shrink-0"
+        style={{ width: 32, height: 32, color: '#0c2136' }}
+        title="Меню"
+        aria-label="Открыть меню"
+      >
+        <Menu style={{ width: 19, height: 19 }} />
+      </button>
+
       {/* Хлебные крошки */}
       <div className="flex-1 min-w-0">
         <h1
