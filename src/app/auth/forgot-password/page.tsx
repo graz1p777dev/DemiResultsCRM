@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Mail, ArrowLeft } from 'lucide-react'
 import { requestPasswordReset } from '@/actions/auth'
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordContent() {
   const searchParams = useSearchParams()
   const hasExpiredLink = searchParams.get('error') === 'invalid_code'
 
@@ -118,5 +118,13 @@ export default function ForgotPasswordPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense fallback={null}>
+      <ForgotPasswordContent />
+    </Suspense>
   )
 }
