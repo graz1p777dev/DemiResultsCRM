@@ -3,6 +3,10 @@ import { createClient } from '@/lib/supabase/server'
 import DashboardShell from './DashboardShell'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  if (process.env.AUTH_BYPASS === '1') {
+    return <DashboardShell>{children}</DashboardShell>
+  }
+
   // Вызываем createClient() здесь, на уровне Layout (вне Suspense),
   // чтобы cookies() был зарегистрирован до начала стриминга.
   // LeftPanel и RightPanel тоже вызывают createClient() внутри Suspense,

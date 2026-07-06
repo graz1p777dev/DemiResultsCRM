@@ -17,9 +17,41 @@ export const metadata: Metadata = {
 // Root layout — читает сессию и employee один раз на SSR.
 // Передаёт данные в AuthProvider как начальное состояние:
 // клиент стартует с уже известным пользователем, без race condition onAuthStateChange.
+const BYPASS_EMPLOYEE = {
+  id: 'temp-owner',
+  user_id: null,
+  department_id: null,
+  name: 'Владелец',
+  phone: null,
+  email: 'temp@local',
+  role: 'owner',
+  avatar_url: null,
+  hire_date: null,
+  birth_date: null,
+  base_salary: 0,
+  kpi_coefficient: 1,
+} as unknown as Employee
+
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  if (process.env.AUTH_BYPASS === '1') {
+    return (
+      <html lang="ru" className="h-full">
+        <body className={`${inter.className} min-h-full bg-gray-50`}>
+          <AuthProvider
+            initialEmployee={BYPASS_EMPLOYEE}
+            initialRealUser={BYPASS_EMPLOYEE}
+            initialImpersonation={null}
+          >
+            {children}
+          </AuthProvider>
+          <Toaster position="bottom-right" />
+        </body>
+      </html>
+    )
+  }
+
   const supabase = await createClient()
 
   // Параллельно получаем сессию и состояние impersonation.

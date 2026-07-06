@@ -2,6 +2,16 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Временный режим без Supabase-авторизации (пока база не настроена)
+  if (process.env.AUTH_BYPASS === '1') {
+    if (request.nextUrl.pathname.startsWith('/auth')) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/dashboard'
+      return NextResponse.redirect(url)
+    }
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(

@@ -10,6 +10,9 @@ import RightPanelSkeleton from '@/components/dashboard/RightPanelSkeleton'
 export const metadata = { title: 'Дашборд — Demi Results' }
 
 export default async function DashboardPage() {
+  // Пока Supabase не настроен — дашборд бизнес-метрик недоступен
+  if (process.env.AUTH_BYPASS === '1') redirect('/dashboard/dialogs')
+
   const supabase = await createClient()
 
   const { data: { session } } = await supabase.auth.getSession()
