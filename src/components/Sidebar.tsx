@@ -149,19 +149,9 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
                           'relative flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors duration-150',
                           active
                             ? 'text-white'
-                            : 'text-[#a2b4c0] hover:text-white'
+                            : 'text-[#a2b4c0] hover:text-white hover:bg-white/[0.06]'
                         )}
                         style={{ zIndex: 1 }}
-                        onMouseEnter={(e) => {
-                          if (!active) {
-                            (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'rgba(255,255,255,0.06)'
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!active) {
-                            (e.currentTarget as HTMLAnchorElement).style.backgroundColor = ''
-                          }
-                        }}
                       >
                         <Icon
                           style={{
