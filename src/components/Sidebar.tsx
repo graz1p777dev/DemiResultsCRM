@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 import { ROLE_LABELS } from '@/lib/constants'
@@ -24,6 +24,37 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname()
   const { user, signOut } = useAuth()
   const role = user?.role as UserRole | undefined
+
+  // Скользящая подсветка активного пункта
+  const itemRefs = useRef<Map<string, HTMLAnchorElement | null>>(new Map())
+  const [indicator, setIndicator] = useState<{ top: number; height: number; visible: boolean }>({
+    top: 0, height: 0, visible: false,
+  })
+  const [animate, setAnimate] = useState(false)
+
+  const activeHref = (() => {
+    for (const group of NAV_GROUPS) {
+      for (const item of group.items) {
+        if (role && item.roles.includes(role) && isActiveLink(pathname, item.href, item.exact)) {
+          return item.href
+        }
+      }
+    }
+    return null
+  })()
+
+  useLayoutEffect(() => {
+    const el = activeHref ? itemRefs.current.get(activeHref) : null
+    if (el) {
+      setIndicator({ top: el.offsetTop, height: el.offsetHeight, visible: true })
+      // включаем плавность только после первой установки позиции
+      const id = requestAnimationFrame(() => setAnimate(true))
+      return () => cancelAnimationFrame(id)
+    } else {
+      setIndicator(prev => ({ ...prev, visible: false }))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeHref, role])
 
   // На мобильном: закрывать drawer при переходе на другую страницу
   useEffect(() => {
@@ -70,6 +101,26 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
 
       {/* Навигация */}
       <nav className="flex-1 overflow-y-auto px-2 py-3" style={{ scrollbarWidth: 'none' }}>
+       <div className="relative">
+        {/* Скользящая подсветка */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: indicator.top,
+            height: indicator.height,
+            backgroundColor: '#0c4d6c',
+            borderRadius: 6,
+            opacity: indicator.visible ? 1 : 0,
+            transition: animate
+              ? 'top 260ms cubic-bezier(0.22,1,0.36,1), height 260ms cubic-bezier(0.22,1,0.36,1), opacity 150ms ease'
+              : 'opacity 150ms ease',
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        />
         {NAV_GROUPS.map((group) => {
           const visible = group.items.filter(
             (item) => role && item.roles.includes(role)
@@ -92,17 +143,15 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
                   return (
                     <li key={item.href}>
                       <Link
+                        ref={(el) => { itemRefs.current.set(item.href, el) }}
                         href={item.href}
                         className={cn(
-                          'flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors duration-150',
+                          'relative flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors duration-150',
                           active
                             ? 'text-white'
                             : 'text-[#a2b4c0] hover:text-white'
                         )}
-                        style={active
-                          ? { backgroundColor: '#0c4d6c' }
-                          : undefined
-                        }
+                        style={{ zIndex: 1 }}
                         onMouseEnter={(e) => {
                           if (!active) {
                             (e.currentTarget as HTMLAnchorElement).style.backgroundColor = 'rgba(255,255,255,0.06)'
@@ -136,6 +185,7 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
             </div>
           )
         })}
+       </div>
       </nav>
 
       {/* Пользователь */}
