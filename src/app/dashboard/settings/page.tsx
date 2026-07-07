@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button'
 import { KpiSettingsPanel } from '@/components/dashboard/KpiSettingsPanel'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus, Save, Pencil, Trash2, Settings, Building2, ShieldCheck, CalendarDays } from 'lucide-react'
+import { Plus, Save, Pencil, Trash2, Settings, Building2, ShieldCheck, CalendarDays, Clock3 } from 'lucide-react'
 import { toast } from 'sonner'
+import { addRecentActivity, getRecentActivities, type RecentActivity } from '@/lib/recent-activity'
 import {
   getDepartments, createDepartment, updateDepartment, deleteDepartment,
   getRoles, createRole, updateRole, deleteRole,
@@ -40,6 +41,67 @@ function SectionCard({ icon, title, children }: {
   )
 }
 
+function formatActivityTime(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+
+  return new Intl.DateTimeFormat('ru-RU', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+}
+
+function RecentActionsPanel() {
+  const [items, setItems] = useState<RecentActivity[]>([])
+
+  useEffect(() => {
+    const sync = () => setItems(getRecentActivities())
+    sync()
+    window.addEventListener('recent-activity-updated', sync)
+    window.addEventListener('storage', sync)
+    return () => {
+      window.removeEventListener('recent-activity-updated', sync)
+      window.removeEventListener('storage', sync)
+    }
+  }, [])
+
+  return (
+    <SectionCard icon={<Clock3 size={15} color="#ffffff" />} title="Последние действия">
+      {items.length === 0 ? (
+        <div className="rounded-xl px-4 py-5 text-center" style={{ backgroundColor: '#f9fafb', border: '1px solid #ebebee' }}>
+          <p className="text-sm font-medium" style={{ color: '#0c2136' }}>Пока нет действий</p>
+          <p className="mt-1 text-xs" style={{ color: '#a2b4c0' }}>
+            Здесь появятся изменения в настройках и сотрудниках.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {items.map(item => (
+            <div key={item.id} className="flex items-start gap-3 rounded-xl px-3 py-2.5"
+              style={{ backgroundColor: '#f9fafb', border: '1px solid #ebebee' }}>
+              <div className="mt-1 h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: '#0c4d6c' }} />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-sm font-medium truncate" style={{ color: '#0c2136' }}>{item.title}</p>
+                  <span className="text-[11px] shrink-0" style={{ color: '#a2b4c0' }}>
+                    {formatActivityTime(item.createdAt)}
+                  </span>
+                </div>
+                <p className="mt-0.5 text-xs truncate" style={{ color: '#6b7280' }}>{item.description}</p>
+                <p className="mt-1 text-[10px] font-bold uppercase tracking-widest" style={{ color: '#a2b4c0' }}>
+                  {item.section}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </SectionCard>
+  )
+}
+
 // ─── Панель отделов ────────────────────────────────────────────────────────────
 
 function DepartmentsPanel() {
@@ -66,6 +128,11 @@ function DepartmentsPanel() {
       const r = await createDepartment(newName, newDesc)
       if (r.success) {
         toast.success('Отдел добавлен')
+        addRecentActivity({
+          title: 'Добавлен отдел',
+          description: newName,
+          section: 'Настройки',
+        })
         setAddingNew(false); setNewName(''); setNewDesc('')
         reload()
       } else toast.error(r.error)
@@ -82,6 +149,11 @@ function DepartmentsPanel() {
       const r = await updateDepartment(editingId, editName, editDesc)
       if (r.success) {
         toast.success('Сохранено')
+        addRecentActivity({
+          title: 'Обновлён отдел',
+          description: editName,
+          section: 'Настройки',
+        })
         setEditingId(null)
         reload()
       } else toast.error(r.error)
@@ -94,6 +166,11 @@ function DepartmentsPanel() {
       const r = await deleteDepartment(d.id)
       if (r.success) {
         toast.success('Отдел удалён')
+        addRecentActivity({
+          title: 'Удалён отдел',
+          description: d.name,
+          section: 'Настройки',
+        })
         reload()
       } else toast.error(r.error)
     })
@@ -245,6 +322,11 @@ function RolesPanel() {
       )
       if (r.success) {
         toast.success('Роль обновлена')
+        addRecentActivity({
+          title: 'Обновлена роль',
+          description: editForm.label,
+          section: 'Настройки',
+        })
         setEditingId(null)
         reload()
       } else toast.error(r.error)
@@ -257,6 +339,11 @@ function RolesPanel() {
       const r = await createRole(newForm.label, newForm.label, newForm.description, newForm.permissionLevel)
       if (r.success) {
         toast.success('Роль добавлена')
+        addRecentActivity({
+          title: 'Добавлена роль',
+          description: newForm.label,
+          section: 'Настройки',
+        })
         setAddingNew(false)
         setNewForm({ label: '', description: '', permissionLevel: 'employee' })
         reload()
@@ -270,6 +357,11 @@ function RolesPanel() {
       const r = await deleteRole(role.id)
       if (r.success) {
         toast.success('Роль удалена')
+        addRecentActivity({
+          title: 'Удалена роль',
+          description: role.label,
+          section: 'Настройки',
+        })
         reload()
       } else toast.error(r.error)
     })
@@ -440,6 +532,11 @@ function WorkSchedulesPanel() {
       const r = await updateWorkSchedule(s.id, nameToSave, editForm.description)
       if (r.success) {
         toast.success('График обновлён')
+        addRecentActivity({
+          title: 'Обновлён график',
+          description: nameToSave,
+          section: 'Настройки',
+        })
         setEditingId(null)
         reload()
       } else toast.error(r.error)
@@ -452,6 +549,11 @@ function WorkSchedulesPanel() {
       const r = await createWorkSchedule(newForm.name, newForm.description)
       if (r.success) {
         toast.success('График добавлен')
+        addRecentActivity({
+          title: 'Добавлен график',
+          description: newForm.name,
+          section: 'Настройки',
+        })
         setAddingNew(false)
         setNewForm({ name: '', description: '' })
         reload()
@@ -465,6 +567,11 @@ function WorkSchedulesPanel() {
       const r = await deleteWorkSchedule(s.id)
       if (r.success) {
         toast.success('График удалён')
+        addRecentActivity({
+          title: 'Удалён график',
+          description: s.name,
+          section: 'Настройки',
+        })
         reload()
       } else toast.error(r.error)
     })
@@ -598,6 +705,7 @@ export default function SettingsPage() {
       <div className="p-5 grid gap-5 lg:grid-cols-2">
         <KpiSettingsPanel />
         <div className="space-y-5">
+          <RecentActionsPanel />
           <DepartmentsPanel />
           <WorkSchedulesPanel />
           <RolesPanel />

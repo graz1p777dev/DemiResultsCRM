@@ -4,17 +4,19 @@ import { useEffect, useState, useMemo } from 'react'
 import { Bell, Menu } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
+import { NAV_GROUPS } from '@/config/nav'
 import { createClient } from '@/lib/supabase/client'
 import { getInitials, formatDateFull } from '@/lib/formatters'
 import { ROLE_LABELS } from '@/lib/constants'
 import type { UserRole } from '@/types'
 
-const PAGE_TITLES: Record<string, string> = {
+const STATIC_PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Дашборд',
   '/dashboard/consultations': 'Записи на консультацию',
   '/dashboard/decomposition': 'Декомпозиция',
   '/dashboard/salary': 'Зарплата',
   '/dashboard/finance': 'Финансы',
+  '/dashboard/marketing': 'Маркетинг',
   '/dashboard/employees': 'Сотрудники',
   '/dashboard/calendar': 'Рабочий календарь',
   '/dashboard/notifications': 'Уведомления',
@@ -23,11 +25,18 @@ const PAGE_TITLES: Record<string, string> = {
   '/dashboard/integrations': 'Интеграции',
 }
 
+const PAGE_TITLES: Record<string, string> = NAV_GROUPS
+  .flatMap(group => group.items)
+  .reduce<Record<string, string>>((acc, item) => {
+    acc[item.href] = item.label
+    return acc
+  }, { ...STATIC_PAGE_TITLES })
+
 function getPageTitle(pathname: string): string {
   if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname]
   const segments = pathname.split('/').filter(Boolean)
   if (segments.length >= 3) {
-    const base = '/' + segments.slice(0, 2).join('/')
+    const base = '/' + segments.slice(0, 3).join('/')
     return PAGE_TITLES[base] ? PAGE_TITLES[base] + ' / Детали' : 'Страница'
   }
   return 'Страница'

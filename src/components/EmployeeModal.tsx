@@ -20,6 +20,7 @@ import {
   updateEmployee,
   type EmployeeFormData,
 } from '@/actions/employees'
+import { addRecentActivity } from '@/lib/recent-activity'
 
 // ─── Константы ────────────────────────────────────────────────────────────────
 
@@ -167,6 +168,11 @@ export default function EmployeeModal({ employee, isNew, departments, roles, sch
 
       if (result.success) {
         toast.success(isNew ? 'Сотрудник добавлен' : 'Изменения сохранены')
+        addRecentActivity({
+          title: isNew ? 'Добавлен сотрудник' : 'Обновлён сотрудник',
+          description: form.name.trim(),
+          section: 'Сотрудники',
+        })
         onSave()
       } else {
         toast.error(result.error)

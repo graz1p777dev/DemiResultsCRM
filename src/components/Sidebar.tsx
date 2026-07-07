@@ -146,10 +146,10 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
                         ref={(el) => { itemRefs.current.set(item.href, el) }}
                         href={item.href}
                         className={cn(
-                          'relative flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors duration-150',
+                          'relative flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors duration-150 outline-none',
                           active
                             ? 'text-white'
-                            : 'text-[#a2b4c0] hover:text-white hover:bg-white/[0.06]'
+                            : 'text-[#a2b4c0] hover:bg-white/[0.06] hover:text-white focus-visible:bg-white/[0.06] focus-visible:text-white'
                         )}
                         style={{ zIndex: 1 }}
                       >

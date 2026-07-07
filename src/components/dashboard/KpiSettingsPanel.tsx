@@ -15,6 +15,7 @@ import {
   type KpiItem,
   type KpiRoleSetting,
 } from '@/actions/kpi-settings'
+import { addRecentActivity } from '@/lib/recent-activity'
 
 // ─── Локальные типы ───────────────────────────────────────────────────────────
 
@@ -361,7 +362,15 @@ export function KpiSettingsPanel() {
       Number(ratePerShift) || 0,
     )
     setSalarySaving(false)
-    if (res.success) { setSalaryDirty(false); toast.success('Оклад сохранён') }
+    if (res.success) {
+      setSalaryDirty(false)
+      toast.success('Оклад сохранён')
+      addRecentActivity({
+        title: 'Обновлены настройки оклада',
+        description: selectedRoleLabel,
+        section: 'Настройки KPI',
+      })
+    }
     else toast.error(res.error)
   }
 
@@ -381,7 +390,14 @@ export function KpiSettingsPanel() {
     }))
     const res = await saveBonusTiers(blockId, tiers)
     updateBlock(blockId, b => ({ ...b, saving: false, dirty: !res.success }))
-    if (res.success) toast.success(`«${block.name}» сохранён`)
+    if (res.success) {
+      toast.success(`«${block.name}» сохранён`)
+      addRecentActivity({
+        title: 'Обновлён бонусный блок',
+        description: `${selectedRoleLabel}: ${block.name}`,
+        section: 'Настройки KPI',
+      })
+    }
     else toast.error(res.error)
   }
 
@@ -393,6 +409,11 @@ export function KpiSettingsPanel() {
     if (res.success) {
       setBonusBlocks(bs => bs.filter(b => b.id !== blockId))
       toast.success('Блок удалён')
+      addRecentActivity({
+        title: 'Удалён бонусный блок',
+        description: `${selectedRoleLabel}: ${block.name}`,
+        section: 'Настройки KPI',
+      })
     } else {
       toast.error(res.error)
     }
@@ -422,6 +443,11 @@ export function KpiSettingsPanel() {
     setNewBlockLabelTo('%')
     setShowAddBlock(false)
     toast.success('Блок добавлен')
+    addRecentActivity({
+      title: 'Добавлен бонусный блок',
+      description: `${selectedRoleLabel}: ${newBlockName.trim()}`,
+      section: 'Настройки KPI',
+    })
   }
 
   // ── KPI-пункты ──────────────────────────────────────────────────────────────
@@ -438,7 +464,15 @@ export function KpiSettingsPanel() {
       bonus_amount: Number(k.bonus_amount) || 0,
     })))
     setItemsSaving(false)
-    if (res.success) { setItemsDirty(false); toast.success('KPI-пункты сохранены') }
+    if (res.success) {
+      setItemsDirty(false)
+      toast.success('KPI-пункты сохранены')
+      addRecentActivity({
+        title: 'Обновлены KPI-пункты',
+        description: selectedRoleLabel,
+        section: 'Настройки KPI',
+      })
+    }
     else toast.error(res.error)
   }
 
