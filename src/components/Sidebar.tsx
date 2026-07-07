@@ -101,81 +101,81 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
 
       {/* Навигация */}
       <nav className="flex-1 overflow-y-auto px-2 py-3" style={{ scrollbarWidth: 'none' }}>
-       <div className="relative">
-        {/* Скользящая подсветка */}
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: indicator.top,
-            height: indicator.height,
-            backgroundColor: '#0c4d6c',
-            borderRadius: 6,
-            opacity: indicator.visible ? 1 : 0,
-            transition: animate
-              ? 'top 260ms cubic-bezier(0.22,1,0.36,1), height 260ms cubic-bezier(0.22,1,0.36,1), opacity 150ms ease'
-              : 'opacity 150ms ease',
-            pointerEvents: 'none',
-            zIndex: 0,
-          }}
-        />
-        {NAV_GROUPS.map((group) => {
-          const visible = group.items.filter(
-            (item) => role && item.roles.includes(role)
-          )
-          if (!visible.length) return null
+        <div className="relative">
+          {/* Скользящая подсветка */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: indicator.top,
+              height: indicator.height,
+              backgroundColor: '#0c4d6c',
+              borderRadius: 6,
+              opacity: indicator.visible ? 1 : 0,
+              transition: animate
+                ? 'top 260ms cubic-bezier(0.22,1,0.36,1), height 260ms cubic-bezier(0.22,1,0.36,1), opacity 150ms ease'
+                : 'opacity 150ms ease',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+          {NAV_GROUPS.map((group) => {
+            const visible = group.items.filter(
+              (item) => role && item.roles.includes(role)
+            )
+            if (!visible.length) return null
 
-          return (
-            <div key={group.label} className="mb-5">
-              <p
-                className="px-2 mb-1 uppercase tracking-widest font-semibold"
-                style={{ fontSize: 10, color: '#4a6075' }}
-              >
-                {group.label}
-              </p>
-              <ul className="space-y-0.5">
-                {visible.map((item) => {
-                  const active = isActiveLink(pathname, item.href, item.exact)
-                  const Icon = item.icon
+            return (
+              <div key={group.label} className="mb-5">
+                <p
+                  className="px-2 mb-1 uppercase tracking-widest font-semibold"
+                  style={{ fontSize: 10, color: '#4a6075' }}
+                >
+                  {group.label}
+                </p>
+                <ul className="space-y-0.5">
+                  {visible.map((item) => {
+                    const active = isActiveLink(pathname, item.href, item.exact)
+                    const Icon = item.icon
 
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        ref={(el) => { itemRefs.current.set(item.href, el) }}
-                        href={item.href}
-                        className={cn(
-                          'relative flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors duration-150 outline-none',
-                          active
-                            ? 'text-white'
-                            : 'text-[#a2b4c0] hover:bg-white/[0.06] hover:text-white focus-visible:bg-white/[0.06] focus-visible:text-white'
-                        )}
-                        style={{ zIndex: 1 }}
-                      >
-                        <Icon
-                          style={{
-                            width: 16,
-                            height: 16,
-                            color: active ? '#ffffff' : '#a2b4c0',
-                            flexShrink: 0,
-                          }}
-                        />
-                        <span
-                          className="truncate"
-                          style={{ fontSize: 13, fontWeight: active ? 500 : 400 }}
+                    return (
+                      <li key={item.href}>
+                        <Link
+                          ref={(el) => { itemRefs.current.set(item.href, el) }}
+                          href={item.href}
+                          className={cn(
+                            'relative flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors duration-150 outline-none',
+                            active
+                              ? 'text-white'
+                              : 'text-[#a2b4c0] hover:bg-white/[0.06] hover:text-white focus-visible:bg-white/[0.06] focus-visible:text-white'
+                          )}
+                          style={{ zIndex: 1 }}
                         >
-                          {item.label}
-                        </span>
-                      </Link>
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-          )
-        })}
-       </div>
+                          <Icon
+                            style={{
+                              width: 16,
+                              height: 16,
+                              color: active ? '#ffffff' : '#a2b4c0',
+                              flexShrink: 0,
+                            }}
+                          />
+                          <span
+                            className="truncate"
+                            style={{ fontSize: 13, fontWeight: active ? 500 : 400 }}
+                          >
+                            {item.label}
+                          </span>
+                        </Link>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            )
+          })}
+        </div>
       </nav>
 
       {/* Пользователь */}
