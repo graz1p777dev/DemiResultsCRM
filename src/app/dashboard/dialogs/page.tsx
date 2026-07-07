@@ -29,6 +29,8 @@ function fmt(iso: string | null) {
   return new Date(iso).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
 }
 
+const PAGE_SIZE = 30
+
 export default function DialogsPage() {
   const [convs, setConvs] = useState<Conversation[]>([])
   const [query, setQuery] = useState('')
@@ -38,16 +40,59 @@ export default function DialogsPage() {
   const [draft, setDraft] = useState('')
   const [sending, setSending] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const listRef = useRef<HTMLDivElement>(null)
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  // Latest search term available inside IntersectionObserver / fetch closures
+  const queryRef = useRef('')
 
-  const loadConvs = () => {
-    botGet<Conversation[]>('/admin/conversations')
-      .then(setConvs)
-      .catch(() => {})
-      .finally(() => setLoading(false))
+  // Fetch one page. reset=true replaces the list (new search / first load).
+  const fetchPage = async (reset: boolean, searchTerm: string) => {
+    if (reset) { setLoading(true) } else { setLoadingMore(true) }
+    const offset = reset ? 0 : convs.length
+    const params = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(offset) })
+    if (searchTerm.trim()) params.set('q', searchTerm.trim())
+    try {
+      const page = await botGet<Conversation[]>(`/admin/conversations?${params.toString()}`)
+      setHasMore(page.length === PAGE_SIZE)
+      setConvs(prev => reset ? page : [...prev, ...page])
+    } catch {
+      if (reset) setConvs([])
+    } finally {
+      setLoading(false)
+      setLoadingMore(false)
+    }
   }
 
-  useEffect(() => { loadConvs() }, [])
+  const reload = () => fetchPage(true, queryRef.current)
+
+  // First load
+  useEffect(() => { queryRef.current = ''; fetchPage(true, '') }, [])
+
+  // Debounced search
+  useEffect(() => {
+    queryRef.current = query
+    const t = setTimeout(() => { fetchPage(true, query) }, 350)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query])
+
+  // Infinite scroll via IntersectionObserver on the sentinel
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el) return
+    const io = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore && !loading && !loadingMore) {
+        fetchPage(false, queryRef.current)
+      }
+    }, { root: listRef.current, rootMargin: '120px' })
+    io.observe(el)
+    return () => io.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasMore, loading, loadingMore, convs.length])
+
   useEffect(() => { bottomRef.current?.scrollIntoView() }, [chat])
 
   const openChat = (c: Conversation) => {
@@ -81,13 +126,6 @@ export default function DialogsPage() {
     }
   }
 
-  const filtered = convs.filter(c =>
-    !query.trim() ||
-    (c.client || '').toLowerCase().includes(query.toLowerCase()) ||
-    (c.phone || '').includes(query) ||
-    c.amocrm_lead_id.includes(query)
-  )
-
   return (
     <div className="p-4 md:p-6 h-[calc(100vh-52px)] flex gap-4">
       {/* Список диалогов */}
@@ -102,13 +140,13 @@ export default function DialogsPage() {
               className="flex-1 bg-transparent outline-none text-sm"
               style={{ color: '#0c2136' }}
             />
-            <button onClick={loadConvs} title="Обновить"><RefreshCw size={13} color="#8a97a5" /></button>
+            <button onClick={reload} title="Обновить"><RefreshCw size={13} color="#8a97a5" /></button>
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto">
+        <div ref={listRef} className="flex-1 overflow-y-auto">
           {loading && <p className="p-4 text-sm" style={{ color: '#8a97a5' }}>Загрузка...</p>}
-          {!loading && filtered.length === 0 && <p className="p-4 text-sm" style={{ color: '#8a97a5' }}>Диалогов нет</p>}
-          {filtered.map(c => (
+          {!loading && convs.length === 0 && <p className="p-4 text-sm" style={{ color: '#8a97a5' }}>Диалогов нет</p>}
+          {convs.map(c => (
             <button
               key={c.id}
               onClick={() => openChat(c)}
@@ -136,6 +174,9 @@ export default function DialogsPage() {
               </div>
             </button>
           ))}
+          {/* Сентинел для догрузки при прокрутке */}
+          {!loading && hasMore && <div ref={sentinelRef} style={{ height: 1 }} />}
+          {loadingMore && <p className="p-3 text-xs text-center" style={{ color: '#b3bcc5' }}>Загрузка ещё...</p>}
         </div>
       </div>
 
