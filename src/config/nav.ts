@@ -31,6 +31,7 @@ import {
   SlidersHorizontal,
   Boxes,
   FlaskConical,
+  Server,
 } from 'lucide-react'
 
 // Товароучёт — отдельное Next.js-приложение (Vercel), примонтированное на
@@ -167,6 +168,12 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Система',
     items: [
+      {
+        href: '/dashboard/server-status',
+        label: 'Сервер',
+        icon: Server,
+        roles: ['owner'],
+      },
       {
         href: '/dashboard/settings',
         label: 'Настройки',

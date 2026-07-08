@@ -91,6 +91,11 @@ const NAV_ICON_TONES: Record<string, { bg: string; soft: string; fg: string }> =
     soft: 'rgba(51,65,85,0.26)',
     fg: '#cbd5e1',
   },
+  '/dashboard/server-status': {
+    bg: 'linear-gradient(135deg,#0ea5e9 0%,#1e293b 100%)',
+    soft: 'rgba(14,165,233,0.2)',
+    fg: '#bae6fd',
+  },
 }
 
 function isActiveLink(pathname: string, href: string, exact?: boolean): boolean {
