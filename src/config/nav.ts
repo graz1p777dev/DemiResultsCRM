@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 import type { UserRole } from '@/types'
+import { FinanceNavIcon } from '@/components/finance/FinanceDesignerIcons'
 
 export interface NavItem {
   href: string
@@ -20,7 +21,6 @@ import {
   BarChart3,
   Megaphone,
   DollarSign,
-  TrendingUp,
   Users,
   Calendar,
   Bell,
@@ -97,7 +97,7 @@ export const NAV_GROUPS: NavGroup[] = [
       {
         href: '/dashboard/finance',
         label: 'Финансы',
-        icon: TrendingUp,
+        icon: FinanceNavIcon,
         roles: ['owner', 'accountant'],
       },
       {

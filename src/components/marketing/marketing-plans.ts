@@ -65,29 +65,29 @@ export const MONTHLY_PLAN: MarketingPlan = {
 
 export const METRICS: MetricMeta[] = [
   // Реклама
-  { key: 'spend',          label: 'Расход',          format: 'money',  direction: 'lower',  group: 'ad',     icon: '📢' },
-  { key: 'impressions',    label: 'Показы',           format: 'number', direction: 'higher', group: 'ad',     icon: '👁' },
-  { key: 'reach',          label: 'Охват',            format: 'number', direction: 'higher', group: 'ad',     icon: '📡' },
-  { key: 'clicks',         label: 'Клики',            format: 'number', direction: 'higher', group: 'ad',     icon: '🖱' },
-  { key: 'ctr',            label: 'CTR',              format: 'pct1',   direction: 'higher', group: 'ad',     icon: '📊' },
-  { key: 'cpc',            label: 'CPC',              format: 'money',  direction: 'lower',  group: 'ad',     icon: '💸' },
-  { key: 'cpm',            label: 'CPM',              format: 'money',  direction: 'lower',  group: 'ad',     icon: '🔢' },
+  { key: 'spend',          label: 'Расход',          format: 'money',  direction: 'lower',  group: 'ad',     icon: 'campaign' },
+  { key: 'impressions',    label: 'Показы',           format: 'number', direction: 'higher', group: 'ad',     icon: 'views' },
+  { key: 'reach',          label: 'Охват',            format: 'number', direction: 'higher', group: 'ad',     icon: 'reach' },
+  { key: 'clicks',         label: 'Клики',            format: 'number', direction: 'higher', group: 'ad',     icon: 'clicks' },
+  { key: 'ctr',            label: 'CTR',              format: 'pct1',   direction: 'higher', group: 'ad',     icon: 'percent' },
+  { key: 'cpc',            label: 'CPC',              format: 'money',  direction: 'lower',  group: 'ad',     icon: 'cost' },
+  { key: 'cpm',            label: 'CPM',              format: 'money',  direction: 'lower',  group: 'ad',     icon: 'number' },
   // Воронка
-  { key: 'cpl',            label: 'CPL',              format: 'money',  direction: 'lower',  group: 'funnel', icon: '🎯' },
-  { key: 'appeals',        label: 'Обращения',        format: 'number', direction: 'higher', group: 'funnel', icon: '💬' },
-  { key: 'leads',          label: 'Лиды',             format: 'number', direction: 'higher', group: 'funnel', icon: '🔥' },
-  { key: 'qualifiedLeads', label: 'Квал. лиды',       format: 'number', direction: 'higher', group: 'funnel', icon: '⭐' },
-  { key: 'consultations',  label: 'Консультации',     format: 'number', direction: 'higher', group: 'funnel', icon: '🤝' },
-  { key: 'sales',          label: 'Продажи',          format: 'number', direction: 'higher', group: 'funnel', icon: '✅' },
+  { key: 'cpl',            label: 'CPL',              format: 'money',  direction: 'lower',  group: 'funnel', icon: 'target' },
+  { key: 'appeals',        label: 'Обращения',        format: 'number', direction: 'higher', group: 'funnel', icon: 'message' },
+  { key: 'leads',          label: 'Лиды',             format: 'number', direction: 'higher', group: 'funnel', icon: 'hot-leads' },
+  { key: 'qualifiedLeads', label: 'Квал. лиды',       format: 'number', direction: 'higher', group: 'funnel', icon: 'qualified' },
+  { key: 'consultations',  label: 'Консультации',     format: 'number', direction: 'higher', group: 'funnel', icon: 'people' },
+  { key: 'sales',          label: 'Продажи',          format: 'number', direction: 'higher', group: 'funnel', icon: 'sales' },
   // Конверсии
-  { key: 'convAppealLead',  label: 'Обр.→Лид',        format: 'pct1',   direction: 'higher', group: 'conv',   icon: '🔄' },
-  { key: 'convLeadConsult', label: 'Лид→Конс.',       format: 'pct1',   direction: 'higher', group: 'conv',   icon: '🔄' },
-  { key: 'convConsultSale', label: 'Конс.→Прод.',     format: 'pct1',   direction: 'higher', group: 'conv',   icon: '🔄' },
+  { key: 'convAppealLead',  label: 'Обр.→Лид',        format: 'pct1',   direction: 'higher', group: 'conv',   icon: 'conversion' },
+  { key: 'convLeadConsult', label: 'Лид→Конс.',       format: 'pct1',   direction: 'higher', group: 'conv',   icon: 'conversion' },
+  { key: 'convConsultSale', label: 'Конс.→Прод.',     format: 'pct1',   direction: 'higher', group: 'conv',   icon: 'conversion' },
   // Финансы
-  { key: 'revenue',        label: 'Выручка',          format: 'money',  direction: 'higher', group: 'fin',    icon: '💰' },
-  { key: 'avgCheck',       label: 'Средний чек',      format: 'money',  direction: 'higher', group: 'fin',    icon: '🧾' },
-  { key: 'romi',           label: 'ROMI',             format: 'pct',    direction: 'higher', group: 'fin',    icon: '📈' },
-  { key: 'drr',            label: 'ДРР',              format: 'pct1',   direction: 'lower',  group: 'fin',    icon: '📉' },
+  { key: 'revenue',        label: 'Выручка',          format: 'money',  direction: 'higher', group: 'fin',    icon: 'revenue' },
+  { key: 'avgCheck',       label: 'Средний чек',      format: 'money',  direction: 'higher', group: 'fin',    icon: 'receipt' },
+  { key: 'romi',           label: 'ROMI',             format: 'pct',    direction: 'higher', group: 'fin',    icon: 'growth' },
+  { key: 'drr',            label: 'ДРР',              format: 'pct1',   direction: 'lower',  group: 'fin',    icon: 'expense-rate' },
 ]
 
 // ── Утилиты ───────────────────────────────────────────────────────────────────

@@ -102,11 +102,11 @@ function buildKpi(raw: ReturnType<typeof buildRawDays>): KpiItem[] {
     ? Math.round((totRevFV + totRevNV) / (totSalesFV + totSalesNV)) : 0
 
   return [
-    { label: 'Плановый ср. чек', value: MOCK_TARGETS.avgCheck, sub: 'ориентир',  color: '#0c4d6c', icon: '🎯' },
-    { label: 'Ср. чек общий',    value: avgTotal,               sub: 'факт',      color: '#0c2136', icon: '💰' },
-    { label: 'Ср. чек ФВ',       value: avgFV,                  sub: 'после ФВ',  color: '#10b981', icon: '✅' },
-    { label: 'Ср. чек без НВ',   value: avgNV,                  sub: 'мимо НВ',   color: '#f59e0b', icon: '📊' },
-    { label: 'Расходы доставки', value: totDel,                  sub: 'за месяц',  color: '#ef4444', icon: '🚚' },
+    { label: 'Плановый ср. чек', value: MOCK_TARGETS.avgCheck, sub: 'ориентир',  color: '#0c4d6c', icon: 'target' },
+    { label: 'Ср. чек общий',    value: avgTotal,               sub: 'факт',      color: '#0c2136', icon: 'avg-check' },
+    { label: 'Ср. чек ФВ',       value: avgFV,                  sub: 'после ФВ',  color: '#10b981', icon: 'sales-check' },
+    { label: 'Ср. чек без НВ',   value: avgNV,                  sub: 'мимо НВ',   color: '#f59e0b', icon: 'percent' },
+    { label: 'Расходы доставки', value: totDel,                  sub: 'за месяц',  color: '#ef4444', icon: 'delivery' },
   ]
 }
 

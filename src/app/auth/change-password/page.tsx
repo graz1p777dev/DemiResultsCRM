@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, ShieldAlert } from 'lucide-react'
+import { CheckCircle2, Eye, EyeOff, ShieldAlert } from 'lucide-react'
 import { changePasswordForce } from '@/actions/auth'
 import { validatePassword, passwordStrength } from '@/lib/auth-validation'
 
@@ -53,7 +53,12 @@ export default function ChangePasswordPage() {
           className="w-full max-w-sm rounded-2xl p-8 text-center space-y-3"
           style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
         >
-          <span style={{ fontSize: 36 }}>✅</span>
+          <div
+            className="w-12 h-12 rounded-full flex items-center justify-center mx-auto"
+            style={{ backgroundColor: 'rgba(34,197,94,0.15)' }}
+          >
+            <CheckCircle2 style={{ width: 24, height: 24, color: '#22c55e' }} />
+          </div>
           <h1 className="text-xl font-bold text-white">Пароль установлен</h1>
           <p className="text-sm" style={{ color: '#a2b4c0' }}>Переходим в систему...</p>
         </div>

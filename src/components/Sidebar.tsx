@@ -10,6 +10,84 @@ import { NAV_GROUPS } from '@/config/nav'
 import { LogOut } from 'lucide-react'
 import type { UserRole } from '@/types'
 
+const NAV_ICON_TONES: Record<string, { bg: string; soft: string; fg: string }> = {
+  '/dashboard': {
+    bg: 'linear-gradient(135deg,#2563eb 0%,#0c4d6c 100%)',
+    soft: 'rgba(37,99,235,0.18)',
+    fg: '#bfdbfe',
+  },
+  '/dashboard/consultations': {
+    bg: 'linear-gradient(135deg,#0f766e 0%,#14b8a6 100%)',
+    soft: 'rgba(20,184,166,0.18)',
+    fg: '#99f6e4',
+  },
+  '/dashboard/dialogs': {
+    bg: 'linear-gradient(135deg,#7c3aed 0%,#2563eb 100%)',
+    soft: 'rgba(124,58,237,0.18)',
+    fg: '#ddd6fe',
+  },
+  '/dashboard/bot-analytics': {
+    bg: 'linear-gradient(135deg,#0c4d6c 0%,#10b981 100%)',
+    soft: 'rgba(16,185,129,0.18)',
+    fg: '#bbf7d0',
+  },
+  '/dashboard/bot-reports': {
+    bg: 'linear-gradient(135deg,#0891b2 0%,#2563eb 100%)',
+    soft: 'rgba(8,145,178,0.18)',
+    fg: '#a5f3fc',
+  },
+  '/dashboard/bot-settings': {
+    bg: 'linear-gradient(135deg,#475569 0%,#111827 100%)',
+    soft: 'rgba(148,163,184,0.18)',
+    fg: '#cbd5e1',
+  },
+  '/dashboard/decomposition': {
+    bg: 'linear-gradient(135deg,#f59e0b 0%,#ef4444 100%)',
+    soft: 'rgba(245,158,11,0.18)',
+    fg: '#fde68a',
+  },
+  '/dashboard/salary': {
+    bg: 'linear-gradient(135deg,#16a34a 0%,#0c4d6c 100%)',
+    soft: 'rgba(34,197,94,0.18)',
+    fg: '#bbf7d0',
+  },
+  '/dashboard/finance': {
+    bg: 'linear-gradient(135deg,#0c2136 0%,#0c4d6c 52%,#15b981 100%)',
+    soft: 'rgba(21,185,129,0.18)',
+    fg: '#b8f7de',
+  },
+  '/dashboard/marketing': {
+    bg: 'linear-gradient(135deg,#ec4899 0%,#7c3aed 100%)',
+    soft: 'rgba(236,72,153,0.18)',
+    fg: '#fbcfe8',
+  },
+  '/dashboard/employees': {
+    bg: 'linear-gradient(135deg,#6366f1 0%,#0c4d6c 100%)',
+    soft: 'rgba(99,102,241,0.18)',
+    fg: '#c7d2fe',
+  },
+  '/dashboard/calendar': {
+    bg: 'linear-gradient(135deg,#06b6d4 0%,#0f766e 100%)',
+    soft: 'rgba(6,182,212,0.18)',
+    fg: '#cffafe',
+  },
+  '/dashboard/notifications': {
+    bg: 'linear-gradient(135deg,#f97316 0%,#ef4444 100%)',
+    soft: 'rgba(249,115,22,0.18)',
+    fg: '#fed7aa',
+  },
+  '/dashboard/documents': {
+    bg: 'linear-gradient(135deg,#64748b 0%,#0c2136 100%)',
+    soft: 'rgba(100,116,139,0.18)',
+    fg: '#e2e8f0',
+  },
+  '/dashboard/settings': {
+    bg: 'linear-gradient(135deg,#334155 0%,#0c4d6c 100%)',
+    soft: 'rgba(51,65,85,0.26)',
+    fg: '#cbd5e1',
+  },
+}
+
 function isActiveLink(pathname: string, href: string, exact?: boolean): boolean {
   if (exact) return pathname === href
   return pathname === href || pathname.startsWith(href + '/')
@@ -139,6 +217,7 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
                   {visible.map((item) => {
                     const active = isActiveLink(pathname, item.href, item.exact)
                     const Icon = item.icon
+                    const tone = NAV_ICON_TONES[item.href] ?? NAV_ICON_TONES['/dashboard']
 
                     return (
                       <li key={item.href}>
@@ -153,14 +232,36 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
                           )}
                           style={{ zIndex: 1 }}
                         >
-                          <Icon
+                          <span
+                            className="relative flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-lg"
                             style={{
-                              width: 16,
-                              height: 16,
-                              color: active ? '#ffffff' : '#a2b4c0',
-                              flexShrink: 0,
+                              background: active ? tone.bg : tone.soft,
+                              boxShadow: active ? '0 8px 18px rgba(0,0,0,0.18)' : 'none',
                             }}
-                          />
+                            aria-hidden
+                          >
+                            <span
+                              aria-hidden
+                              style={{
+                                position: 'absolute',
+                                right: -8,
+                                top: -10,
+                                width: 18,
+                                height: 18,
+                                borderRadius: 999,
+                                backgroundColor: active ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.08)',
+                              }}
+                            />
+                            <Icon
+                              style={{
+                                position: 'relative',
+                                width: 14,
+                                height: 14,
+                                color: active ? '#ffffff' : tone.fg,
+                                flexShrink: 0,
+                              }}
+                            />
+                          </span>
                           <span
                             className="truncate"
                             style={{ fontSize: 13, fontWeight: active ? 500 : 400 }}

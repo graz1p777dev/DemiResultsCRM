@@ -1,6 +1,7 @@
 'use client'
 
-import { ChevronLeft, ChevronRight, Landmark } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { FinanceHeaderIcon } from './FinanceDesignerIcons'
 
 const RU_MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
 
@@ -13,9 +14,7 @@ export default function FinanceHeader({ year, month, onPrev, onNext }: Props) {
   return (
     <div className="flex items-center justify-between px-5 py-4 border-b" style={{ backgroundColor: '#fff', borderColor: '#ebebee' }}>
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#0c2136' }}>
-          <Landmark className="w-5 h-5 text-white" />
-        </div>
+        <FinanceHeaderIcon />
         <div>
           <p className="text-sm font-bold" style={{ color: '#0c2136' }}>Финансы</p>
           <p className="text-[11px]" style={{ color: '#a2b4c0' }}>{RU_MONTHS[month]} {year}</p>

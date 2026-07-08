@@ -1,6 +1,7 @@
 'use client'
 
 import type { KpiItem } from '@/lib/decomposition/types'
+import { MetricIconBadge } from '@/components/common/MetricIconBadge'
 
 function fmtMoney(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + ' M'
@@ -23,7 +24,7 @@ export default function QuickKpiCard({ items }: Props) {
         >
           <div className="flex items-center justify-between mb-2">
             <p className="text-[11px] leading-tight font-medium" style={{ color: '#a2b4c0' }}>{kpi.label}</p>
-            <span className="text-base">{kpi.icon}</span>
+            <MetricIconBadge name={`${kpi.label} ${kpi.icon}`} />
           </div>
           <div>
             <p className="text-2xl font-bold leading-none" style={{ color: kpi.color }}>

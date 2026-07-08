@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, Lock } from 'lucide-react'
+import { CheckCircle2, Eye, EyeOff, Lock } from 'lucide-react'
 import { confirmPasswordReset } from '@/actions/auth'
 import { validatePassword, passwordStrength } from '@/lib/auth-validation'
 
@@ -60,7 +60,7 @@ export default function ResetPasswordPage() {
             className="w-12 h-12 rounded-full flex items-center justify-center mx-auto"
             style={{ backgroundColor: 'rgba(34,197,94,0.15)' }}
           >
-            <span style={{ fontSize: 22 }}>✅</span>
+            <CheckCircle2 style={{ width: 24, height: 24, color: '#22c55e' }} />
           </div>
           <h1 className="text-xl font-bold text-white">Пароль обновлён</h1>
           <p className="text-sm" style={{ color: '#a2b4c0' }}>

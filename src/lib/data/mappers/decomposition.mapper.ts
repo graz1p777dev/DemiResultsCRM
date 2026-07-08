@@ -109,11 +109,11 @@ function mapKpi(daily: DailyStatRow[], avgCheckTarget: number): KpiItem[] {
   const totDel     = daily.reduce((s, r) => s + r.delivery, 0)
 
   return [
-    { label: 'Плановый ср. чек', value: avgCheckTarget,                                sub: 'ориентир', color: '#0c4d6c', icon: '🎯' },
-    { label: 'Ср. чек общий',    value: avgCheck(totRevFV + totRevNV, totSalesFV + totSalesNV), sub: 'факт',     color: '#0c2136', icon: '💰' },
-    { label: 'Ср. чек ФВ',       value: avgCheck(totRevFV, totSalesFV),                sub: 'после ФВ', color: '#10b981', icon: '✅' },
-    { label: 'Ср. чек без НВ',   value: avgCheck(totRevNV, totSalesNV),                sub: 'мимо НВ',  color: '#f59e0b', icon: '📊' },
-    { label: 'Расходы доставки', value: totDel,                                        sub: 'за месяц', color: '#ef4444', icon: '🚚' },
+    { label: 'Плановый ср. чек', value: avgCheckTarget,                                sub: 'ориентир', color: '#0c4d6c', icon: 'target' },
+    { label: 'Ср. чек общий',    value: avgCheck(totRevFV + totRevNV, totSalesFV + totSalesNV), sub: 'факт',     color: '#0c2136', icon: 'avg-check' },
+    { label: 'Ср. чек ФВ',       value: avgCheck(totRevFV, totSalesFV),                sub: 'после ФВ', color: '#10b981', icon: 'sales-check' },
+    { label: 'Ср. чек без НВ',   value: avgCheck(totRevNV, totSalesNV),                sub: 'мимо НВ',  color: '#f59e0b', icon: 'percent' },
+    { label: 'Расходы доставки', value: totDel,                                        sub: 'за месяц', color: '#ef4444', icon: 'delivery' },
   ]
 }
 

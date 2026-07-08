@@ -1,6 +1,7 @@
 'use client'
 
 import type { MarketingKpi } from '@/lib/models/marketing'
+import { MetricIconBadge } from '@/components/common/MetricIconBadge'
 import {
   METRICS, MONTHLY_PLAN, getStatus, fmtValue, STATUS_COLORS,
   type MetricMeta,
@@ -64,8 +65,8 @@ function KpiCard({ metric, fact, plan }: KpiCardProps) {
     >
       {/* Шапка */}
       <div className="flex items-start justify-between gap-1">
-        <div className="flex items-center gap-1.5">
-          <span className="text-base leading-none">{metric.icon}</span>
+        <div className="flex items-center gap-2">
+          <MetricIconBadge name={`${metric.key} ${metric.label} ${metric.icon}`} />
           <p className="text-[11px] font-semibold leading-tight" style={{ color: '#0c2136' }}>
             {metric.label}
           </p>

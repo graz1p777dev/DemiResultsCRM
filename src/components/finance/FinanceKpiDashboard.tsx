@@ -2,9 +2,10 @@
 
 import type { FinanceKpi } from '@/lib/models/finance'
 import { FINANCE_PLAN, getStatus, STATUS_COLOR, fmtMoney, fmtPct, fmtNum, type MetricDir } from './finance-plans'
+import { FinanceMetricIcon, type MetricIconKey } from './FinanceDesignerIcons'
 
 interface Metric {
-  label: string; icon: string; dir: MetricDir
+  label: string; icon: MetricIconKey; dir: MetricDir
   fact: number; plan: number
   fmt: (n: number) => string
   suffix?: string
@@ -23,8 +24,8 @@ function KpiCard({ m }: { m: Metric }) {
       style={{ backgroundColor: '#fff', borderColor: c.border, borderWidth: 1.5 }}
     >
       <div className="flex items-start justify-between">
-        <div className="flex items-center gap-1.5">
-          <span className="text-base">{m.icon}</span>
+        <div className="flex items-center gap-2">
+          <FinanceMetricIcon icon={m.icon} />
           <p className="text-[11px] font-semibold" style={{ color: '#0c2136' }}>{m.label}</p>
         </div>
         <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
@@ -62,27 +63,27 @@ export default function FinanceKpiDashboard({ kpi }: Props) {
     {
       title: 'Выручка и прибыль',
       metrics: [
-        { label: 'Выручка',       icon: '💰', dir: 'higher', fact: kpi.totalRevenue,  plan: FINANCE_PLAN.revenue,  fmt: fmtMoney },
-        { label: 'Расходы',       icon: '📤', dir: 'lower',  fact: kpi.totalExpenses, plan: FINANCE_PLAN.expenses, fmt: fmtMoney },
-        { label: 'Чистая прибыль',icon: '📈', dir: 'higher', fact: kpi.totalProfit,   plan: FINANCE_PLAN.profit,   fmt: fmtMoney },
-        { label: 'Маржа',         icon: '📊', dir: 'higher', fact: kpi.avgMargin,     plan: FINANCE_PLAN.margin,   fmt: fmtPct, suffix: '' },
+        { label: 'Выручка',       icon: 'revenue',  dir: 'higher', fact: kpi.totalRevenue,  plan: FINANCE_PLAN.revenue,  fmt: fmtMoney },
+        { label: 'Расходы',       icon: 'expenses', dir: 'lower',  fact: kpi.totalExpenses, plan: FINANCE_PLAN.expenses, fmt: fmtMoney },
+        { label: 'Чистая прибыль',icon: 'profit',   dir: 'higher', fact: kpi.totalProfit,   plan: FINANCE_PLAN.profit,   fmt: fmtMoney },
+        { label: 'Маржа',         icon: 'margin',   dir: 'higher', fact: kpi.avgMargin,     plan: FINANCE_PLAN.margin,   fmt: fmtPct, suffix: '' },
       ],
     },
     {
       title: 'Продажи',
       metrics: [
-        { label: 'Сделки',     icon: '🤝', dir: 'higher', fact: kpi.totalTransactions, plan: FINANCE_PLAN.transactions, fmt: fmtNum },
-        { label: 'Средний чек',icon: '🧾', dir: 'higher', fact: kpi.avgCheck,           plan: FINANCE_PLAN.avgCheck,     fmt: fmtMoney },
+        { label: 'Сделки',     icon: 'deals',    dir: 'higher', fact: kpi.totalTransactions, plan: FINANCE_PLAN.transactions, fmt: fmtNum },
+        { label: 'Средний чек',icon: 'avgCheck', dir: 'higher', fact: kpi.avgCheck,           plan: FINANCE_PLAN.avgCheck,     fmt: fmtMoney },
       ],
     },
     {
       title: 'Структура расходов',
       metrics: [
-        { label: 'ФОТ',        icon: '👥', dir: 'lower', fact: kpi.expBreakdown.payroll,   plan: FINANCE_PLAN.expPayroll,   fmt: fmtMoney },
-        { label: 'Маркетинг',  icon: '📢', dir: 'lower', fact: kpi.expBreakdown.marketing, plan: FINANCE_PLAN.expMarketing, fmt: fmtMoney },
-        { label: 'Аренда',     icon: '🏢', dir: 'lower', fact: kpi.expBreakdown.rent,      plan: FINANCE_PLAN.expRent,      fmt: fmtMoney },
-        { label: 'Расходники', icon: '🧴', dir: 'lower', fact: kpi.expBreakdown.supplies,  plan: FINANCE_PLAN.expSupplies,  fmt: fmtMoney },
-        { label: 'Прочие',     icon: '📦', dir: 'lower', fact: kpi.expBreakdown.other,     plan: FINANCE_PLAN.expOther,     fmt: fmtMoney },
+        { label: 'ФОТ',        icon: 'payroll',   dir: 'lower', fact: kpi.expBreakdown.payroll,   plan: FINANCE_PLAN.expPayroll,   fmt: fmtMoney },
+        { label: 'Маркетинг',  icon: 'marketing', dir: 'lower', fact: kpi.expBreakdown.marketing, plan: FINANCE_PLAN.expMarketing, fmt: fmtMoney },
+        { label: 'Аренда',     icon: 'rent',      dir: 'lower', fact: kpi.expBreakdown.rent,      plan: FINANCE_PLAN.expRent,      fmt: fmtMoney },
+        { label: 'Расходники', icon: 'supplies',  dir: 'lower', fact: kpi.expBreakdown.supplies,  plan: FINANCE_PLAN.expSupplies,  fmt: fmtMoney },
+        { label: 'Прочие',     icon: 'other',     dir: 'lower', fact: kpi.expBreakdown.other,     plan: FINANCE_PLAN.expOther,     fmt: fmtMoney },
       ],
     },
   ]

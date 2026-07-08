@@ -1,6 +1,7 @@
 'use client'
 
 import type { MarketingKpi } from '@/lib/models/marketing'
+import { MetricIconBadge } from '@/components/common/MetricIconBadge'
 
 function fmtMoney(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + ' M'
@@ -30,21 +31,21 @@ function buildCards(kpi: MarketingKpi): KpiCardDef[] {
       value: fmtMoney(kpi.totalSpend) + ' KGS',
       sub:   `${fmtNum(kpi.totalClicks)} кликов · CTR ${kpi.avgCtr}%`,
       color: '#0c2136',
-      icon:  '📢',
+      icon:  'campaign',
     },
     {
       label: 'CPL (стоимость лида)',
       value: fmtMoney(kpi.avgCpl) + ' KGS',
       sub:   `${fmtNum(kpi.totalLeads)} лидов получено`,
       color: '#0c4d6c',
-      icon:  '🎯',
+      icon:  'target',
     },
     {
       label: 'ROMI',
       value: kpi.romi.toLocaleString('ru') + '%',
       sub:   'возврат на инвестиции',
       color: kpi.romi >= 500 ? '#10b981' : kpi.romi >= 200 ? '#f59e0b' : '#ef4444',
-      icon:  '📈',
+      icon:  'growth',
       badge: { text: kpi.romi >= 500 ? 'Отлично' : kpi.romi >= 200 ? 'Норма' : 'Ниже нормы', good: kpi.romi >= 200 },
     },
     {
@@ -52,7 +53,7 @@ function buildCards(kpi: MarketingKpi): KpiCardDef[] {
       value: kpi.drr.toFixed(1) + '%',
       sub:   'доля рекламных расходов',
       color: kpi.drr <= 10 ? '#10b981' : kpi.drr <= 20 ? '#f59e0b' : '#ef4444',
-      icon:  '📊',
+      icon:  'percent',
       badge: { text: kpi.drr <= 10 ? 'Норма' : 'Высокий', good: kpi.drr <= 10 },
     },
     {
@@ -60,28 +61,28 @@ function buildCards(kpi: MarketingKpi): KpiCardDef[] {
       value: fmtNum(kpi.totalAppeals),
       sub:   `в т.ч. ЛМ: ${fmtNum(kpi.totalAppealsLM)}`,
       color: '#0c2136',
-      icon:  '💬',
+      icon:  'message',
     },
     {
       label: 'Конв. обр.→лид',
       value: kpi.convAppealLead.toFixed(1) + '%',
       sub:   `→ консульт ${kpi.convLeadConsult.toFixed(1)}%`,
       color: '#0c4d6c',
-      icon:  '🔄',
+      icon:  'conversion',
     },
     {
       label: 'Продажи',
       value: fmtNum(kpi.totalSales),
       sub:   `конв. консульт→прод ${kpi.convConsultSale.toFixed(1)}%`,
       color: '#10b981',
-      icon:  '✅',
+      icon:  'sales',
     },
     {
       label: 'Выручка',
       value: fmtMoney(kpi.totalRevenue) + ' KGS',
       sub:   `ср. чек ${fmtMoney(kpi.avgCheck)} KGS`,
       color: '#0c2136',
-      icon:  '💰',
+      icon:  'revenue',
     },
   ]
 }
@@ -105,7 +106,7 @@ export default function MarketingKpiCards({ kpi }: Props) {
             <p className="text-[11px] font-medium leading-tight" style={{ color: '#a2b4c0' }}>
               {card.label}
             </p>
-            <span className="text-base leading-none">{card.icon}</span>
+            <MetricIconBadge name={`${card.label} ${card.icon}`} />
           </div>
           <p className="text-xl font-bold leading-none mb-1" style={{ color: card.color }}>
             {card.value}
