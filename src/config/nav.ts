@@ -29,7 +29,15 @@ import {
   MessageSquare,
   FileBarChart2,
   SlidersHorizontal,
+  Boxes,
+  FlaskConical,
 } from 'lucide-react'
+
+// Товароучёт — отдельное Next.js-приложение на своём поддомене (Vercel), не
+// часть этого роутера. Ссылка всегда полный внешний URL, поэтому обычный
+// <Link> из Sidebar.tsx делает hard navigation и не пытается матчить её как
+// внутренний путь /dashboard/*.
+const INVENTORY_URL = 'https://inventory.demiresults.alihan-torebekov.kg'
 
 export const NAV_GROUPS: NavGroup[] = [
   {
@@ -75,6 +83,23 @@ export const NAV_GROUPS: NavGroup[] = [
         href: '/dashboard/bot-settings',
         label: 'Настройки бота',
         icon: SlidersHorizontal,
+        roles: ['owner'],
+      },
+      {
+        href: '/dashboard/laboratory',
+        label: 'Лаборатория',
+        icon: FlaskConical,
+        roles: ['owner'],
+      },
+    ],
+  },
+  {
+    label: 'Товароучёт',
+    items: [
+      {
+        href: INVENTORY_URL,
+        label: 'Товароучёт',
+        icon: Boxes,
         roles: ['owner'],
       },
     ],

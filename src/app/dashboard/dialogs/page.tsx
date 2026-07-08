@@ -225,6 +225,7 @@ export default function DialogsPage() {
               {chat?.messages.map(m => {
                 const isClient = m.role === 'user'
                 const isManager = m.role === 'manager'
+                const isBot = !isClient && !isManager
                 return (
                   <div key={m.id} className={`flex flex-col max-w-[80%] ${isClient ? 'items-start self-start' : 'items-end self-end'}`}>
                     <div className="flex items-center gap-1 text-[10px] mb-0.5" style={{ color: isManager ? '#16a34a' : '#8a97a5' }}>
@@ -241,6 +242,14 @@ export default function DialogsPage() {
                     >
                       {m.text}
                     </div>
+                    {isBot && (
+                      <span
+                        className="mt-0.5 text-[10px] font-semibold"
+                        style={{ color: m.status === 'pending_review' ? '#d97706' : '#16a34a' }}
+                      >
+                        {m.status === 'pending_review' ? '#непринятое' : '#принято'}
+                      </span>
+                    )}
                   </div>
                 )
               })}

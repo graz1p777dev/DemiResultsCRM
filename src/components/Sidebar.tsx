@@ -41,6 +41,11 @@ const NAV_ICON_TONES: Record<string, { bg: string; soft: string; fg: string }> =
     soft: 'rgba(148,163,184,0.18)',
     fg: '#cbd5e1',
   },
+  '/dashboard/laboratory': {
+    bg: 'linear-gradient(135deg,#db2777 0%,#7c3aed 100%)',
+    soft: 'rgba(219,39,119,0.18)',
+    fg: '#fbcfe8',
+  },
   '/dashboard/decomposition': {
     bg: 'linear-gradient(135deg,#f59e0b 0%,#ef4444 100%)',
     soft: 'rgba(245,158,11,0.18)',
@@ -120,6 +125,7 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
     }
     return null
   })()
+  const activeTone = activeHref ? (NAV_ICON_TONES[activeHref] ?? NAV_ICON_TONES['/dashboard']) : null
 
   useLayoutEffect(() => {
     const el = activeHref ? itemRefs.current.get(activeHref) : null
@@ -189,8 +195,9 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
               right: 0,
               top: indicator.top,
               height: indicator.height,
-              backgroundColor: '#0c4d6c',
+              background: activeTone?.bg ?? '#0c4d6c',
               borderRadius: 6,
+              boxShadow: activeTone ? `0 6px 16px ${activeTone.soft}` : 'none',
               opacity: indicator.visible ? 1 : 0,
               transition: animate
                 ? 'top 260ms cubic-bezier(0.22,1,0.36,1), height 260ms cubic-bezier(0.22,1,0.36,1), opacity 150ms ease'
@@ -235,8 +242,8 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
                           <span
                             className="relative flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-lg"
                             style={{
-                              background: active ? tone.bg : tone.soft,
-                              boxShadow: active ? '0 8px 18px rgba(0,0,0,0.18)' : 'none',
+                              background: active ? 'rgba(255,255,255,0.22)' : tone.soft,
+                              boxShadow: 'none',
                             }}
                             aria-hidden
                           >
