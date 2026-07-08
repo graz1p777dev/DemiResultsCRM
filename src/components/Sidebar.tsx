@@ -225,10 +225,15 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
                     const active = isActiveLink(pathname, item.href, item.exact)
                     const Icon = item.icon
                     const tone = NAV_ICON_TONES[item.href] ?? NAV_ICON_TONES['/dashboard']
+                    // /inventory — отдельная Next.js-зона (Multi-Zones rewrite), не часть
+                    // роутера этого приложения. Обычный <a> даёт hard navigation; next/link
+                    // попытался бы клиентский переход и словил бы 404.
+                    const isCrossZone = item.href.startsWith('/inventory')
+                    const LinkTag = isCrossZone ? 'a' : Link
 
                     return (
                       <li key={item.href}>
-                        <Link
+                        <LinkTag
                           ref={(el) => { itemRefs.current.set(item.href, el) }}
                           href={item.href}
                           className={cn(
@@ -275,7 +280,7 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
                           >
                             {item.label}
                           </span>
-                        </Link>
+                        </LinkTag>
                       </li>
                     )
                   })}

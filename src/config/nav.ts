@@ -33,11 +33,13 @@ import {
   FlaskConical,
 } from 'lucide-react'
 
-// Товароучёт — отдельное Next.js-приложение на своём поддомене (Vercel), не
-// часть этого роутера. Ссылка всегда полный внешний URL, поэтому обычный
-// <Link> из Sidebar.tsx делает hard navigation и не пытается матчить её как
-// внутренний путь /dashboard/*.
-const INVENTORY_URL = 'https://inventory.demiresults.alihan-torebekov.kg'
+// Товароучёт — отдельное Next.js-приложение (Vercel), примонтированное на
+// этот же домен по префиксу /inventory через rewrites в next.config.ts
+// (Next.js Multi-Zones). Не часть роутера этого приложения — Sidebar.tsx
+// рендерит такие ссылки обычным <a>, чтобы был hard navigation, а не
+// клиентский переход react-router'ом (иначе 404, т.к. /inventory/* не
+// входит в манифест маршрутов этой сборки).
+const INVENTORY_URL = '/inventory'
 
 export const NAV_GROUPS: NavGroup[] = [
   {
