@@ -22,7 +22,6 @@ const STATIC_PAGE_TITLES: Record<string, string> = {
   '/dashboard/notifications': 'Уведомления',
   '/dashboard/documents': 'Документы',
   '/dashboard/settings': 'Настройки',
-  '/dashboard/integrations': 'Интеграции',
 }
 
 const PAGE_TITLES: Record<string, string> = NAV_GROUPS
