@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { useCallback, useEffect, useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { KpiSettingsPanel } from '@/components/dashboard/KpiSettingsPanel'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus, Save, Pencil, Trash2, Settings, Building2, ShieldCheck, CalendarDays, Clock3 } from 'lucide-react'
+import { Plus, Save, Pencil, Trash2, Settings, Building2, ShieldCheck, CalendarDays, Clock3, Palette, Check } from 'lucide-react'
 import { toast } from 'sonner'
 import { addRecentActivity, getRecentActivities, type RecentActivity } from '@/lib/recent-activity'
 import {
@@ -14,6 +14,7 @@ import {
   getWorkSchedules, createWorkSchedule, updateWorkSchedule, deleteWorkSchedule,
   type DeptRow, type RoleRow, type WorkScheduleRow,
 } from '@/actions/settings'
+import { ACCENT_PRESETS, ACCENT_COOKIE_NAME, DEFAULT_ACCENT, isAccentId, type AccentId } from '@/lib/accent-theme'
 
 // ─── Вспомогательный компонент секции ─────────────────────────────────────────
 
@@ -23,21 +24,65 @@ function SectionCard({ icon, title, children }: {
   children: React.ReactNode
 }) {
   return (
-    <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: '#ffffff' }}>
+    <div className="rounded-2xl overflow-hidden glass">
       <div
         className="flex items-center gap-2.5 px-5 py-4"
-        style={{ borderBottom: '1px solid #ebebee' }}
+        style={{ borderBottom: '1px solid rgba(124,58,237,0.08)' }}
       >
-        <div
-          className="flex items-center justify-center w-8 h-8 rounded-xl"
-          style={{ backgroundColor: '#0c4d6c' }}
-        >
+        <div className="flex items-center justify-center w-8 h-8 rounded-xl accent-gradient">
           {icon}
         </div>
-        <h2 className="font-semibold text-sm" style={{ color: '#0c2136' }}>{title}</h2>
+        <h2 className="font-semibold text-sm text-foreground">{title}</h2>
       </div>
       <div className="p-5">{children}</div>
     </div>
+  )
+}
+
+function AppearancePanel() {
+  const [active, setActive] = useState<AccentId>(DEFAULT_ACCENT)
+
+  useEffect(() => {
+    const current = document.documentElement.getAttribute('data-accent')
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- одноразовая синхронизация с DOM-атрибутом, выставленным сервером до гидратации (тот же паттерн, что useIsMobile)
+    if (isAccentId(current ?? undefined)) setActive(current as AccentId)
+  }, [])
+
+  const choose = useCallback((id: AccentId) => {
+    document.documentElement.setAttribute('data-accent', id)
+    document.cookie = `${ACCENT_COOKIE_NAME}=${id}; path=/; max-age=31536000; SameSite=Lax`
+    setActive(id)
+    toast.success('Акцентный цвет изменён')
+  }, [])
+
+  return (
+    <SectionCard icon={<Palette size={15} color="#ffffff" />} title="Внешний вид">
+      <p className="text-xs text-muted-foreground mb-4">
+        Акцентный цвет применяется сразу и сохраняется только на этом устройстве.
+      </p>
+      <div className="grid grid-cols-5 gap-3">
+        {ACCENT_PRESETS.map(p => (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => choose(p.id)}
+            className="flex flex-col items-center gap-1.5 group"
+            title={p.label}
+          >
+            <span
+              className="relative w-11 h-11 rounded-full flex items-center justify-center transition-transform group-hover:scale-105"
+              style={{
+                background: `linear-gradient(135deg, ${p.from}, ${p.to})`,
+                boxShadow: active === p.id ? `0 0 0 3px var(--background), 0 0 0 5px ${p.from}` : '0 4px 12px -4px rgba(0,0,0,0.2)',
+              }}
+            >
+              {active === p.id && <Check size={16} color="#ffffff" strokeWidth={3} />}
+            </span>
+            <span className="text-[11px] text-muted-foreground">{p.label}</span>
+          </button>
+        ))}
+      </div>
+    </SectionCard>
   )
 }
 
@@ -685,25 +730,22 @@ function WorkSchedulesPanel() {
 
 export default function SettingsPage() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5f6f8' }}>
-      <div
-        className="flex items-center gap-3 px-6 py-4"
-        style={{ backgroundColor: '#0c2136' }}
-      >
-        <div
-          className="flex items-center justify-center w-9 h-9 rounded-xl"
-          style={{ backgroundColor: '#0c4d6c' }}
-        >
+    <div className="min-h-screen">
+      <div className="flex items-center gap-3 px-6 py-4 glass-dark text-white">
+        <div className="flex items-center justify-center w-9 h-9 rounded-xl accent-gradient">
           <Settings size={18} color="#ffffff" />
         </div>
         <div>
-          <div className="text-white font-semibold text-base leading-tight">Настройки</div>
+          <div className="font-semibold text-base leading-tight">Настройки</div>
           <div className="text-xs" style={{ color: '#a2b4c0' }}>Управление системой</div>
         </div>
       </div>
 
       <div className="p-5 grid gap-5 lg:grid-cols-2">
-        <KpiSettingsPanel />
+        <div className="space-y-5">
+          <AppearancePanel />
+          <KpiSettingsPanel />
+        </div>
         <div className="space-y-5">
           <RecentActionsPanel />
           <DepartmentsPanel />

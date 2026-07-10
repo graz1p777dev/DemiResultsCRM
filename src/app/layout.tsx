@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { cookies } from 'next/headers'
 import './globals.css'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { getImpersonationState } from '@/actions/auth'
 import { createClient } from '@/lib/supabase/server'
 import { Toaster } from 'sonner'
 import { Employee } from '@/types'
+import { DEFAULT_ACCENT, ACCENT_COOKIE_NAME, isAccentId } from '@/lib/accent-theme'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 
@@ -35,10 +37,14 @@ const BYPASS_EMPLOYEE = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const jar = await cookies()
+  const accentCookie = jar.get(ACCENT_COOKIE_NAME)?.value
+  const accent = isAccentId(accentCookie) ? accentCookie : DEFAULT_ACCENT
+
   if (process.env.AUTH_BYPASS === '1') {
     return (
-      <html lang="ru" className="h-full">
-        <body className={`${inter.className} min-h-full bg-gray-50`}>
+      <html lang="ru" className="h-full" data-accent={accent}>
+        <body className={`${inter.className} min-h-full bg-background`}>
           <AuthProvider
             initialEmployee={BYPASS_EMPLOYEE}
             initialRealUser={BYPASS_EMPLOYEE}
@@ -92,8 +98,8 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="ru" className="h-full">
-      <body className={`${inter.className} min-h-full bg-gray-50`}>
+    <html lang="ru" className="h-full" data-accent={accent}>
+      <body className={`${inter.className} min-h-full bg-background`}>
         <AuthProvider
           initialEmployee={initialEmployee}
           initialRealUser={initialRealUser}

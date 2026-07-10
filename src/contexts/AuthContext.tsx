@@ -15,6 +15,7 @@ interface AuthContextType {
   impersonating: ImpersonationInfo | null
   loading: boolean
   signOut: () => Promise<void>
+  updateUser: (patch: Partial<Employee>) => void
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -23,6 +24,7 @@ const AuthContext = createContext<AuthContextType>({
   impersonating: null,
   loading: false,
   signOut: async () => {},
+  updateUser: () => {},
 })
 
 interface AuthProviderProps {
@@ -64,8 +66,12 @@ export function AuthProvider({
     setImp(null)
   }
 
+  const updateUser = (patch: Partial<Employee>) => {
+    setUser(prev => (prev ? { ...prev, ...patch } : prev))
+  }
+
   return (
-    <AuthContext.Provider value={{ user, realUser, impersonating, loading: false, signOut }}>
+    <AuthContext.Provider value={{ user, realUser, impersonating, loading: false, signOut, updateUser }}>
       {children}
     </AuthContext.Provider>
   )

@@ -37,12 +37,8 @@ export default function TodaySchedule({ items, currentTime }: TodayScheduleProps
   if (items.length === 0) {
     return (
       <div
-        className="flex flex-col items-center justify-center rounded-xl"
-        style={{
-          minHeight: 80,
-          backgroundColor: 'rgba(255,255,255,0.6)',
-          border: '1px dashed #e5e7eb',
-        }}
+        className="flex flex-col items-center justify-center rounded-xl glass"
+        style={{ minHeight: 80, borderStyle: 'dashed' }}
       >
         <p style={{ fontSize: 13, color: '#a2b4c0' }}>Расписание пустое</p>
       </div>
@@ -53,21 +49,14 @@ export default function TodaySchedule({ items, currentTime }: TodayScheduleProps
   const nowIdx = items.findIndex(item => item.time >= currentTime && !item.isPast)
 
   return (
-    <div
-      className="rounded-xl overflow-hidden"
-      style={{
-        backgroundColor: '#ffffff',
-        border: '1px solid rgba(0,0,0,0.04)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-      }}
-    >
+    <div className="rounded-xl overflow-hidden glass">
       {items.map((item, i) => (
         <div key={item.id}>
           {/* Разделитель «Сейчас» */}
           {i === nowIdx && (
             <div
               className="flex items-center gap-2 px-4 py-1"
-              style={{ backgroundColor: '#f0f9f4' }}
+              style={{ backgroundColor: 'rgba(16,185,129,0.1)' }}
             >
               <div
                 className="rounded-full"
@@ -83,7 +72,7 @@ export default function TodaySchedule({ items, currentTime }: TodayScheduleProps
           <div
             className="flex items-center gap-3 px-4 py-2.5"
             style={{
-              borderBottom: i < items.length - 1 ? '1px solid #f9fafb' : 'none',
+              borderBottom: i < items.length - 1 ? '1px solid rgba(124,58,237,0.06)' : 'none',
               opacity: item.isPast ? 0.45 : 1,
             }}
           >
@@ -104,7 +93,7 @@ export default function TodaySchedule({ items, currentTime }: TodayScheduleProps
                 className="flex-1 rounded-full"
                 style={{
                   width: 2,
-                  backgroundColor: item.isPast ? '#e5e7eb' : '#0c4d6c',
+                  backgroundColor: item.isPast ? '#e5e7eb' : 'var(--accent-from)',
                   minHeight: 20,
                 }}
               />

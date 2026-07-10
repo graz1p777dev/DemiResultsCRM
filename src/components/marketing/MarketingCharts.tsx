@@ -1,11 +1,15 @@
 'use client'
 
+import { useState } from 'react'
 import {
   ResponsiveContainer, ComposedChart, Bar, AreaChart, Area,
   Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid, ReferenceLine,
 } from 'recharts'
 import type { MarketingDailyRow } from '@/lib/models/marketing'
 import { MONTHLY_PLAN } from './marketing-plans'
+import { GlassChartCard } from '@/components/charts/GlassChartCard'
+import { ChartTypeToggle, type ChartKind } from '@/components/charts/ChartTypeToggle'
+import { CHART_COLORS, CHART_TOOLTIP_STYLE, CHART_GRID_STROKE, CHART_MARGIN, CHART_TICK } from '@/components/charts/chart-theme'
 
 function fmtK(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M'
@@ -13,10 +17,8 @@ function fmtK(n: number) {
   return String(n)
 }
 
-const CARD = { backgroundColor: '#fff', borderColor: '#ebebee' }
-const TIP  = { fontSize: 11, borderRadius: 8, border: '1px solid #ebebee' }
-const TICK = { fontSize: 10, fill: '#a2b4c0' }
-const MARGIN = { top: 4, right: 4, left: -16, bottom: 0 }
+const TICK = CHART_TICK
+const MARGIN = CHART_MARGIN
 const H = 180
 
 interface Props {
@@ -24,6 +26,7 @@ interface Props {
 }
 
 export default function MarketingCharts({ daily }: Props) {
+  const [spendKind, setSpendKind] = useState<ChartKind>('bar')
   const active = daily.filter(r => !r.isFuture)
 
   // ── Данные для каждого графика ────────────────────────────────────────────
@@ -68,114 +71,138 @@ export default function MarketingCharts({ daily }: Props) {
       <div className="grid grid-cols-2 gap-3">
 
         {/* 1. Расход vs Выручка */}
-        <div className="rounded-2xl p-4 shadow-sm border" style={CARD}>
-          <p className="text-sm font-semibold mb-3" style={{ color: '#0c2136' }}>Расход vs Выручка</p>
+        <GlassChartCard
+          title="Расход vs Выручка"
+          action={<ChartTypeToggle value={spendKind} onChange={setSpendKind} />}
+        >
           <ResponsiveContainer width="100%" height={H}>
-            <ComposedChart data={spendRevenueData} margin={MARGIN}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="day" tick={TICK} interval={4} />
-              <YAxis yAxisId="l" tick={TICK} tickFormatter={fmtK} />
-              <YAxis yAxisId="r" orientation="right" tick={TICK} tickFormatter={fmtK} />
-              <Tooltip
-                contentStyle={TIP}
-                formatter={(v, n) => [fmtK(Number(v)) + ' KGS', String(n)]}
-              />
-              <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-              <Bar  yAxisId="l" dataKey="Расход"  fill="#0c4d6c" radius={[3,3,0,0]} />
-              <Line yAxisId="r" dataKey="Выручка" stroke="#10b981" strokeWidth={2} dot={false} />
-            </ComposedChart>
+            {spendKind === 'bar' ? (
+              <ComposedChart data={spendRevenueData} margin={MARGIN}>
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
+                <XAxis dataKey="day" tick={TICK} interval={4} />
+                <YAxis yAxisId="l" tick={TICK} tickFormatter={fmtK} />
+                <YAxis yAxisId="r" orientation="right" tick={TICK} tickFormatter={fmtK} />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} formatter={(v, n) => [fmtK(Number(v)) + ' KGS', String(n)]} />
+                <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
+                <Bar  yAxisId="l" dataKey="Расход"  fill={CHART_COLORS.violet} radius={[4,4,0,0]} />
+                <Line yAxisId="r" dataKey="Выручка" stroke={CHART_COLORS.emerald} strokeWidth={2} dot={false} />
+              </ComposedChart>
+            ) : spendKind === 'line' ? (
+              <ComposedChart data={spendRevenueData} margin={MARGIN}>
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
+                <XAxis dataKey="day" tick={TICK} interval={4} />
+                <YAxis tick={TICK} tickFormatter={fmtK} />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} formatter={(v, n) => [fmtK(Number(v)) + ' KGS', String(n)]} />
+                <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
+                <Line dataKey="Расход"  stroke={CHART_COLORS.violet} strokeWidth={2.5} dot={false} />
+                <Line dataKey="Выручка" stroke={CHART_COLORS.emerald} strokeWidth={2.5} dot={false} />
+              </ComposedChart>
+            ) : (
+              <AreaChart data={spendRevenueData} margin={MARGIN}>
+                <defs>
+                  <linearGradient id="gSpendA" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={CHART_COLORS.violet} stopOpacity={0.35} />
+                    <stop offset="95%" stopColor={CHART_COLORS.violet} stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="gRevA" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={CHART_COLORS.emerald} stopOpacity={0.3} />
+                    <stop offset="95%" stopColor={CHART_COLORS.emerald} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
+                <XAxis dataKey="day" tick={TICK} interval={4} />
+                <YAxis tick={TICK} tickFormatter={fmtK} />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} formatter={(v, n) => [fmtK(Number(v)) + ' KGS', String(n)]} />
+                <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
+                <Area dataKey="Расход" stroke={CHART_COLORS.violet} fill="url(#gSpendA)" strokeWidth={2} dot={false} />
+                <Area dataKey="Выручка" stroke={CHART_COLORS.emerald} fill="url(#gRevA)" strokeWidth={2} dot={false} />
+              </AreaChart>
+            )}
           </ResponsiveContainer>
-        </div>
+        </GlassChartCard>
 
         {/* 2. Обращения vs Продажи */}
-        <div className="rounded-2xl p-4 shadow-sm border" style={CARD}>
-          <p className="text-sm font-semibold mb-3" style={{ color: '#0c2136' }}>Обращения vs Продажи</p>
+        <GlassChartCard title="Обращения vs Продажи">
           <ResponsiveContainer width="100%" height={H}>
             <ComposedChart data={appealsData} margin={MARGIN}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
               <XAxis dataKey="day" tick={TICK} interval={4} />
               <YAxis yAxisId="l" tick={TICK} />
               <YAxis yAxisId="r" orientation="right" tick={TICK} />
-              <Tooltip contentStyle={TIP} />
+              <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
               <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-              <Bar  yAxisId="l" dataKey="Обращения" fill="#0c2136" radius={[3,3,0,0]} />
-              <Line yAxisId="r" dataKey="Продажи"   stroke="#f59e0b" strokeWidth={2} dot={false} />
+              <Bar  yAxisId="l" dataKey="Обращения" fill={CHART_COLORS.cyan} radius={[4,4,0,0]} />
+              <Line yAxisId="r" dataKey="Продажи"   stroke={CHART_COLORS.amber} strokeWidth={2} dot={false} />
             </ComposedChart>
           </ResponsiveContainer>
-        </div>
+        </GlassChartCard>
       </div>
 
       {/* Строка 2: CPL | ROMI | Накопительный план */}
       <div className="grid grid-cols-3 gap-3">
 
         {/* 3. CPL по дням */}
-        <div className="rounded-2xl p-4 shadow-sm border" style={CARD}>
-          <p className="text-sm font-semibold mb-3" style={{ color: '#0c2136' }}>CPL по дням</p>
+        <GlassChartCard title="CPL по дням">
           <ResponsiveContainer width="100%" height={H}>
             <ComposedChart data={cplData} margin={MARGIN}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
               <XAxis dataKey="day" tick={TICK} interval={4} />
               <YAxis tick={TICK} tickFormatter={fmtK} />
-              <Tooltip
-                contentStyle={TIP}
-                formatter={(v, n) => [fmtK(Number(v)) + ' KGS', String(n)]}
-              />
+              <Tooltip contentStyle={CHART_TOOLTIP_STYLE} formatter={(v, n) => [fmtK(Number(v)) + ' KGS', String(n)]} />
               <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-              <ReferenceLine y={MONTHLY_PLAN.cpl} stroke="#ef4444" strokeDasharray="4 4" />
-              <Bar  dataKey="CPL"  fill="#0c4d6c" radius={[3,3,0,0]} />
-              <Line dataKey="план" stroke="#ef4444" strokeWidth={1.5} strokeDasharray="4 4" dot={false} />
+              <ReferenceLine y={MONTHLY_PLAN.cpl} stroke={CHART_COLORS.rose} strokeDasharray="4 4" />
+              <Bar  dataKey="CPL"  fill={CHART_COLORS.violet} radius={[4,4,0,0]} />
+              <Line dataKey="план" stroke={CHART_COLORS.rose} strokeWidth={1.5} strokeDasharray="4 4" dot={false} />
             </ComposedChart>
           </ResponsiveContainer>
-        </div>
+        </GlassChartCard>
 
         {/* 4. ROMI */}
-        <div className="rounded-2xl p-4 shadow-sm border" style={CARD}>
-          <p className="text-sm font-semibold mb-3" style={{ color: '#0c2136' }}>ROMI %</p>
+        <GlassChartCard title="ROMI %">
           <ResponsiveContainer width="100%" height={H}>
             <ComposedChart data={romiData} margin={MARGIN}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
               <XAxis dataKey="day" tick={TICK} interval={4} />
               <YAxis tick={TICK} tickFormatter={v => v + '%'} />
               <Tooltip
-                contentStyle={TIP}
+                contentStyle={CHART_TOOLTIP_STYLE}
                 formatter={(v, n) => [Number(v).toLocaleString('ru') + '%', String(n)]}
               />
               <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-              <ReferenceLine y={MONTHLY_PLAN.romi} stroke="#10b981" strokeDasharray="4 4" />
-              <Bar  dataKey="ROMI" fill="#0c2136" radius={[3,3,0,0]} />
-              <Line dataKey="план" stroke="#10b981" strokeWidth={1.5} strokeDasharray="4 4" dot={false} />
+              <ReferenceLine y={MONTHLY_PLAN.romi} stroke={CHART_COLORS.emerald} strokeDasharray="4 4" />
+              <Bar  dataKey="ROMI" fill={CHART_COLORS.cyan} radius={[4,4,0,0]} />
+              <Line dataKey="план" stroke={CHART_COLORS.emerald} strokeWidth={1.5} strokeDasharray="4 4" dot={false} />
             </ComposedChart>
           </ResponsiveContainer>
-        </div>
+        </GlassChartCard>
 
         {/* 5. Накопительный план */}
-        <div className="rounded-2xl p-4 shadow-sm border" style={CARD}>
-          <p className="text-sm font-semibold mb-3" style={{ color: '#0c2136' }}>Выполнение плана накопительно</p>
+        <GlassChartCard title="Выполнение плана накопительно">
           <ResponsiveContainer width="100%" height={H}>
             <AreaChart data={cumulativeData} margin={MARGIN}>
               <defs>
                 <linearGradient id="gradFact" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#0c4d6c" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#0c4d6c" stopOpacity={0}    />
+                  <stop offset="5%"  stopColor={CHART_COLORS.violet} stopOpacity={0.35} />
+                  <stop offset="95%" stopColor={CHART_COLORS.violet} stopOpacity={0}    />
                 </linearGradient>
                 <linearGradient id="gradPlan" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor="#a2b4c0" stopOpacity={0.20} />
-                  <stop offset="95%" stopColor="#a2b4c0" stopOpacity={0}    />
+                  <stop offset="5%"  stopColor="#94a3b8" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}    />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
               <XAxis dataKey="day" tick={TICK} interval={4} />
               <YAxis tick={TICK} tickFormatter={fmtK} />
               <Tooltip
-                contentStyle={TIP}
+                contentStyle={CHART_TOOLTIP_STYLE}
                 formatter={(v, n) => [fmtK(Number(v)) + ' KGS', String(n)]}
               />
               <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
-              <Area dataKey="План" stroke="#a2b4c0" fill="url(#gradPlan)" strokeWidth={1.5} strokeDasharray="4 4" dot={false} />
-              <Area dataKey="Факт" stroke="#0c4d6c" fill="url(#gradFact)" strokeWidth={2} dot={false} />
+              <Area dataKey="План" stroke="#94a3b8" fill="url(#gradPlan)" strokeWidth={1.5} strokeDasharray="4 4" dot={false} />
+              <Area dataKey="Факт" stroke={CHART_COLORS.violet} fill="url(#gradFact)" strokeWidth={2} dot={false} />
             </AreaChart>
           </ResponsiveContainer>
-        </div>
+        </GlassChartCard>
 
       </div>
     </div>

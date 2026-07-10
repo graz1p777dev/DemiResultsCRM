@@ -160,7 +160,13 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
         'md:sticky md:top-0 md:z-auto md:translate-x-0 md:transition-none',
         mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full',
       )}
-      style={{ width: 192, backgroundColor: '#0c1f33' }}
+      style={{
+        width: 192,
+        background: 'linear-gradient(180deg, rgba(20,16,41,0.72) 0%, rgba(12,15,26,0.72) 100%)',
+        backdropFilter: 'blur(24px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+        boxShadow: '1px 0 0 rgba(255,255,255,0.06), 8px 0 32px -12px rgba(76,29,149,0.25)',
+      }}
     >
       {/* Логотип */}
       <div
@@ -168,11 +174,8 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
         style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
       >
         <div
-          className="flex items-center justify-center rounded-lg flex-shrink-0"
-          style={{
-            width: 32, height: 32,
-            backgroundColor: '#0c4d6c',
-          }}
+          className="flex items-center justify-center rounded-lg flex-shrink-0 accent-gradient accent-shadow"
+          style={{ width: 32, height: 32 }}
         >
           <span className="text-white font-bold" style={{ fontSize: 11, letterSpacing: '0.05em' }}>
             DR
@@ -304,10 +307,9 @@ export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
         <div className="flex items-center gap-2.5">
           {/* Аватар */}
           <div
-            className="flex items-center justify-center rounded-full flex-shrink-0 text-white font-semibold"
+            className="flex items-center justify-center rounded-full flex-shrink-0 text-white font-semibold accent-gradient"
             style={{
               width: 30, height: 30,
-              backgroundColor: '#0c4d6c',
               fontSize: 11,
             }}
           >

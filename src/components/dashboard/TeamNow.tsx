@@ -24,12 +24,8 @@ export default function TeamNow({ members }: TeamNowProps) {
   if (members.length === 0) {
     return (
       <div
-        className="flex items-center justify-center rounded-xl"
-        style={{
-          minHeight: 80,
-          backgroundColor: 'rgba(255,255,255,0.6)',
-          border: '1px dashed #e5e7eb',
-        }}
+        className="flex items-center justify-center rounded-xl glass"
+        style={{ minHeight: 80, borderStyle: 'dashed' }}
       >
         <p style={{ fontSize: 13, color: '#a2b4c0' }}>Нет сотрудников</p>
       </div>
@@ -37,28 +33,20 @@ export default function TeamNow({ members }: TeamNowProps) {
   }
 
   return (
-    <div
-      className="rounded-xl overflow-hidden"
-      style={{
-        backgroundColor: '#ffffff',
-        border: '1px solid rgba(0,0,0,0.04)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-      }}
-    >
+    <div className="rounded-xl overflow-hidden glass">
       {members.map((member, i) => (
         <div
           key={member.id}
           className="flex items-center gap-3 px-4 py-2.5"
           style={{
-            borderBottom: i < members.length - 1 ? '1px solid #f9fafb' : 'none',
+            borderBottom: i < members.length - 1 ? '1px solid rgba(124,58,237,0.06)' : 'none',
           }}
         >
           {/* Аватар */}
           <div
-            className="flex items-center justify-center rounded-full flex-shrink-0 text-white font-semibold"
+            className="flex items-center justify-center rounded-full flex-shrink-0 text-white font-semibold accent-gradient"
             style={{
               width: 30, height: 30,
-              backgroundColor: '#0c4d6c',
               fontSize: 10,
             }}
           >

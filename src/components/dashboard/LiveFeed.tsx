@@ -138,12 +138,8 @@ export default function LiveFeed({ initialItems, dateStr, employeeId }: LiveFeed
   if (items.length === 0) {
     return (
       <div
-        className="flex flex-col items-center justify-center rounded-xl"
-        style={{
-          minHeight: 100,
-          backgroundColor: 'rgba(255,255,255,0.6)',
-          border: '1px dashed #e5e7eb',
-        }}
+        className="flex flex-col items-center justify-center rounded-xl glass"
+        style={{ minHeight: 100, borderStyle: 'dashed' }}
       >
         <p style={{ fontSize: 13, color: '#a2b4c0' }}>Записей на сегодня нет</p>
       </div>
@@ -159,14 +155,8 @@ export default function LiveFeed({ initialItems, dateStr, employeeId }: LiveFeed
         }
       `}</style>
       <div
-        className="rounded-xl overflow-hidden"
-        style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid rgba(0,0,0,0.04)',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-          maxHeight: 320,
-          overflowY: 'auto',
-        }}
+        className="rounded-xl overflow-hidden glass"
+        style={{ maxHeight: 320, overflowY: 'auto' }}
       >
         <div className="px-4">
           {items.map(item => (

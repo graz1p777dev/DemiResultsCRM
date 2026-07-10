@@ -74,10 +74,12 @@ export default async function DashboardPage() {
 
       {/* ── Левая панель: итоги месяца ── */}
       <div
-        className="flex flex-col overflow-y-auto"
+        className="flex flex-col overflow-y-auto glass"
         style={{
-          backgroundColor: '#ffffff',
-          borderRight: '1px solid #e5e7eb',
+          borderTop: 'none',
+          borderLeft: 'none',
+          borderBottom: 'none',
+          borderRight: '1px solid rgba(124,58,237,0.08)',
           minWidth: 0,
           width: '55%',
         }}
@@ -107,7 +109,6 @@ export default async function DashboardPage() {
       <div
         className="flex flex-col overflow-y-auto"
         style={{
-          backgroundColor: '#f5f6f8',
           minWidth: 0,
           width: '45%',
         }}
