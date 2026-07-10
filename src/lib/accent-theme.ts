@@ -3,11 +3,11 @@
 // это чисто визуальная настройка, не связана с аккаунтом пользователя.
 
 export const ACCENT_COOKIE_NAME = 'accent'
-export const DEFAULT_ACCENT = 'violet'
+export const DEFAULT_ACCENT = 'blue'
 
 export const ACCENT_PRESETS = [
+  { id: 'blue', label: 'Синий (классический)', from: '#0c4d6c', to: '#14708f' },
   { id: 'violet', label: 'Фиолетовый', from: '#7c3aed', to: '#9333ea' },
-  { id: 'blue', label: 'Синий', from: '#2563eb', to: '#06b6d4' },
   { id: 'emerald', label: 'Изумрудный', from: '#059669', to: '#10b981' },
   { id: 'rose', label: 'Розовый', from: '#e11d48', to: '#ec4899' },
   { id: 'amber', label: 'Янтарный', from: '#d97706', to: '#f59e0b' },
