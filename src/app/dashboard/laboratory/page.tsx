@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
 import { botGet, botJson } from '@/lib/bot-api'
 import {
   Bot, User, Send, ImagePlus, Video, X, RefreshCw, Sparkles,
@@ -29,6 +29,11 @@ type MistakeResult = {
 
 const CATEGORY_COLORS = ['#2563eb', '#7c3aed', '#db2777', '#dc2626', '#d97706', '#059669', '#0891b2']
 
+// Чат в песочнице стартует компактным и плавно «дорастает» до этого предела
+// по мере переписки, дальше — обычный скролл.
+const CHAT_MIN_HEIGHT = 140
+const CHAT_MAX_HEIGHT = 560
+
 const areaCls = 'w-full rounded-xl px-3 py-2.5 text-xs outline-none resize-y font-mono leading-relaxed'
 const areaStyle = { backgroundColor: '#f5f6f8', color: '#0c2136' } as const
 const btnPrimary = 'rounded-xl px-4 py-2 text-sm font-medium text-white disabled:opacity-50'
@@ -36,13 +41,13 @@ const muted = { color: '#8a97a5' }
 
 function Card({ icon, title, right, children }: { icon: React.ReactNode; title: string; right?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl overflow-hidden bg-white">
-      <div className="flex items-center justify-between gap-2.5 px-5 py-4" style={{ borderBottom: '1px solid #ebebee' }}>
+    <div className="rounded-2xl overflow-hidden glass">
+      <div className="flex items-center justify-between gap-2.5 px-5 py-4" style={{ borderBottom: '1px solid rgba(124,58,237,0.08)' }}>
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center justify-center w-8 h-8 rounded-xl" style={{ backgroundColor: '#0c4d6c' }}>
+          <div className="flex items-center justify-center w-8 h-8 rounded-xl accent-gradient">
             {icon}
           </div>
-          <h2 className="font-semibold text-sm" style={{ color: '#0c2136' }}>{title}</h2>
+          <h2 className="font-semibold text-sm text-foreground">{title}</h2>
         </div>
         {right}
       </div>
@@ -71,6 +76,8 @@ export default function LaboratoryPage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLInputElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const chatInnerRef = useRef<HTMLDivElement>(null)
+  const [chatHeight, setChatHeight] = useState(CHAT_MIN_HEIGHT)
 
   const [prices, setPrices] = useState<ModelPrice[]>([])
   const [model, setModel] = useState('')
@@ -95,6 +102,12 @@ export default function LaboratoryPage() {
   }, [])
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [history])
+
+  // Чат «дорастает» до CHAT_MAX_HEIGHT по мере переписки вместо фиксированной высоты.
+  useLayoutEffect(() => {
+    const content = chatInnerRef.current?.scrollHeight ?? CHAT_MIN_HEIGHT
+    setChatHeight(Math.min(CHAT_MAX_HEIGHT, Math.max(CHAT_MIN_HEIGHT, content + 24)))
+  }, [history, loading, editingIdx])
 
   const selectedPrice = prices.find(p => p.model === model)
   const totals = useMemo(
@@ -207,7 +220,16 @@ export default function LaboratoryPage() {
             </div>
           }
         >
-          <div className="rounded-xl p-3 flex flex-col gap-3 overflow-y-auto" style={{ backgroundColor: '#f9fafb', minHeight: 360, maxHeight: 560 }}>
+          <div
+            className="rounded-xl"
+            style={{
+              backgroundColor: '#f9fafb',
+              height: chatHeight,
+              overflowY: chatHeight >= CHAT_MAX_HEIGHT ? 'auto' : 'hidden',
+              transition: 'height 260ms cubic-bezier(0.22,1,0.36,1)',
+            }}
+          >
+          <div ref={chatInnerRef} className="p-3 flex flex-col gap-3">
             {history.length === 0 && (
               <p className="text-sm text-center mt-16" style={muted}>
                 Напишите сообщение клиента — бот ответит с черновиком промпта/памяти справа
@@ -280,6 +302,7 @@ export default function LaboratoryPage() {
               </div>
             )}
             <div ref={bottomRef} />
+          </div>
           </div>
 
           {images.length > 0 && (

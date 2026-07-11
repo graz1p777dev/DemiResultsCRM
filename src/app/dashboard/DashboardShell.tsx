@@ -29,11 +29,16 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   }
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: '#f5f6f8' }}>
+    <div className="flex min-h-screen">
+      {/* Плавающий градиентный фон за всем приложением */}
+      <div className="gradient-mesh" aria-hidden>
+        <div className="mesh-blob" />
+      </div>
+
       {/* Затемнение под мобильным drawer */}
       {menuOpen && (
         <div
-          className="fixed inset-0 z-40 md:hidden"
+          className="fixed inset-0 z-40 md:hidden backdrop-blur-sm"
           style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
           onClick={() => setMenuOpen(false)}
         />
@@ -41,18 +46,14 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       <Sidebar mobileOpen={menuOpen} onClose={() => setMenuOpen(false)} />
       <div className="flex-1 flex flex-col min-w-0">
         {impersonating && (
-          <div
-            className="flex items-center justify-between px-4 py-2 text-sm font-medium shrink-0"
-            style={{ backgroundColor: '#f59e0b', color: '#0c2136' }}
-          >
+          <div className="flex items-center justify-between px-4 py-2 text-sm font-medium shrink-0 bg-gradient-to-r from-amber-400 to-orange-400 text-amber-950">
             <span>
               👤 Вы просматриваете систему от имени <strong>{impersonating.name}</strong> ({impersonating.role})
             </span>
             <button
               onClick={handleExitImpersonation}
               disabled={pending}
-              className="ml-4 px-3 py-1 rounded-lg text-xs font-semibold transition-colors"
-              style={{ backgroundColor: 'rgba(12,33,54,0.15)' }}
+              className="ml-4 px-3 py-1 rounded-lg text-xs font-semibold transition-colors bg-black/10 hover:bg-black/15"
             >
               {pending ? '...' : '← Выйти в свой аккаунт'}
             </button>

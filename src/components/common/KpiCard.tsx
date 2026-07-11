@@ -24,11 +24,9 @@ export default function KpiCard({
 
   return (
     <div
-      className="rounded-xl p-4 flex flex-col gap-3"
+      className="rounded-xl p-4 flex flex-col gap-3 glass card-hover"
       style={{
-        backgroundColor: '#ffffff',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
-        border: '1px solid #f0f2f4',
+        boxShadow: '0 8px 24px -12px rgba(76,29,149,0.12)',
       }}
     >
       {/* Заголовок */}
@@ -69,7 +67,7 @@ export default function KpiCard({
           style={{
             height: 3,
             borderRadius: 2,
-            backgroundColor: '#f0f2f4',
+            backgroundColor: 'rgba(124,58,237,0.1)',
           }}
         >
           <div

@@ -253,6 +253,67 @@ export async function changePasswordForce(newPassword: string): Promise<ActionRe
   return { success: true }
 }
 
+// ─── updateOwnProfile ──────────────────────────────────────────────────────────
+// Пользователь редактирует свои контактные данные (имя, телефон, email).
+// Не трогает auth.users.email (вход в систему) — это отдельная сущность,
+// требующая подтверждения по почте, а SMTP на проде не настроен (см. HANDOFF.md §3).
+
+export type UpdateProfileResult =
+  | { success: true; employee: { name: string; phone: string | null; email: string } }
+  | { success: false; error: string }
+
+export async function updateOwnProfile(fields: {
+  name: string
+  phone: string
+  email: string
+}): Promise<UpdateProfileResult> {
+  const name = fields.name.trim()
+  const phone = fields.phone.trim()
+  const email = fields.email.trim()
+
+  if (!name) return { success: false, error: 'Укажите имя' }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { success: false, error: 'Укажите корректный email' }
+  }
+
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) return { success: false, error: 'Сессия недействительна. Войдите заново.' }
+
+  const admin = createAdminClient()
+  const { error } = await admin
+    .from('employees')
+    .update({ name, phone: phone || null, email })
+    .eq('user_id', session.user.id)
+
+  if (error) {
+    console.error('[updateOwnProfile]', error.message)
+    return { success: false, error: 'Не удалось сохранить изменения' }
+  }
+
+  return { success: true, employee: { name, phone: phone || null, email } }
+}
+
+// ─── changeOwnPassword ─────────────────────────────────────────────────────────
+// Пользователь меняет свой пароль из профиля (не форс-флоу первого входа).
+
+export async function changeOwnPassword(newPassword: string): Promise<ActionResult> {
+  const err = validatePassword(newPassword)
+  if (err) return { success: false, error: err }
+
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) return { success: false, error: 'Сессия недействительна. Войдите заново.' }
+
+  const { error } = await supabase.auth.updateUser({ password: newPassword })
+  if (error) {
+    console.error('[changeOwnPassword]', error.message)
+    return { success: false, error: 'Не удалось обновить пароль. Попробуйте ещё раз.' }
+  }
+
+  return { success: true }
+}
+
 // ─── UUID-валидация ───────────────────────────────────────────────────────────
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i

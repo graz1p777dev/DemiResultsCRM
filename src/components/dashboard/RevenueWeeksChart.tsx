@@ -1,10 +1,13 @@
 'use client'
+import { useState } from 'react'
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, Cell, CartesianGrid,
+  BarChart, Bar, LineChart, Line, AreaChart, Area,
+  XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts'
 import type { WeekRevenuePoint } from '@/lib/dashboard-queries'
 import { formatMoney, formatMoneyShort } from '@/lib/formatters'
+import { ChartTypeToggle, type ChartKind } from '@/components/charts/ChartTypeToggle'
+import { CHART_COLORS, CHART_TOOLTIP_STYLE, CHART_GRID_STROKE, CHART_MARGIN } from '@/components/charts/chart-theme'
 
 interface RevenueWeeksChartProps {
   data: WeekRevenuePoint[]
@@ -19,15 +22,8 @@ function CustomTooltip({
 }) {
   if (!active || !payload?.length) return null
   return (
-    <div
-      className="rounded-xl px-3 py-2 shadow-lg"
-      style={{
-        backgroundColor: '#0c2136',
-        border: '1px solid rgba(255,255,255,0.08)',
-        fontSize: 12,
-      }}
-    >
-      <p style={{ color: '#a2b4c0', marginBottom: 2 }}>Неделя {label}</p>
+    <div className="rounded-xl px-3 py-2" style={CHART_TOOLTIP_STYLE}>
+      <p style={{ color: '#a5a8c3', marginBottom: 2 }}>Неделя {label}</p>
       <p className="font-semibold tabular-nums" style={{ color: '#ffffff' }}>
         {formatMoney(payload[0].value)}
       </p>
@@ -35,61 +31,81 @@ function CustomTooltip({
   )
 }
 
+const commonAxisProps = {
+  axisLine: false,
+  tickLine: false,
+  tick: { fontSize: 11, fill: '#8b8fa3' },
+}
+
 export default function RevenueWeeksChart({ data }: RevenueWeeksChartProps) {
+  const [kind, setKind] = useState<ChartKind>('bar')
   const hasData = data.some(d => d.revenue > 0)
 
-  if (!hasData) {
-    return (
-      <div
-        className="flex flex-col items-center justify-center rounded-xl"
-        style={{
-          height: 160,
-          backgroundColor: '#f9fafb',
-          border: '1px dashed #e5e7eb',
-        }}
-      >
-        <p style={{ fontSize: 13, color: '#a2b4c0' }}>Нет продаж в этом месяце</p>
-      </div>
-    )
-  }
-
   return (
-    <div style={{ height: 160 }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={data}
-          margin={{ top: 4, right: 4, left: -16, bottom: 0 }}
-          barCategoryGap="30%"
-        >
-          <CartesianGrid
-            vertical={false}
-            stroke="#f0f2f4"
-            strokeDasharray="0"
-          />
-          <XAxis
-            dataKey="label"
-            tick={{ fontSize: 11, fill: '#a2b4c0' }}
-            axisLine={false}
-            tickLine={false}
-          />
-          <YAxis
-            tickFormatter={formatMoneyShort}
-            tick={{ fontSize: 11, fill: '#a2b4c0' }}
-            axisLine={false}
-            tickLine={false}
-            width={44}
-          />
-          <Tooltip
-            content={<CustomTooltip />}
-            cursor={{ fill: 'rgba(12,77,108,0.06)' }}
-          />
-          <Bar dataKey="revenue" radius={[4, 4, 0, 0]} maxBarSize={40}>
-            {data.map((_, i) => (
-              <Cell key={i} fill="#0c4d6c" />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+    <div>
+      <div className="flex justify-end mb-2">
+        <ChartTypeToggle value={kind} onChange={setKind} />
+      </div>
+
+      {!hasData ? (
+        <div className="flex flex-col items-center justify-center rounded-xl glass" style={{ height: 160 }}>
+          <p style={{ fontSize: 13, color: '#8b8fa3' }}>Нет продаж в этом месяце</p>
+        </div>
+      ) : (
+        <div style={{ height: 160 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            {kind === 'bar' ? (
+              <BarChart data={data} margin={CHART_MARGIN} barCategoryGap="30%">
+                <defs>
+                  <linearGradient id="revenueBarFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={CHART_COLORS.violet} stopOpacity={0.95} />
+                    <stop offset="100%" stopColor={CHART_COLORS.violet} stopOpacity={0.55} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} stroke={CHART_GRID_STROKE} />
+                <XAxis dataKey="label" {...commonAxisProps} />
+                <YAxis tickFormatter={formatMoneyShort} {...commonAxisProps} width={44} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(124,58,237,0.06)' }} />
+                <Bar dataKey="revenue" radius={[6, 6, 0, 0]} maxBarSize={40} fill="url(#revenueBarFill)" />
+              </BarChart>
+            ) : kind === 'line' ? (
+              <LineChart data={data} margin={CHART_MARGIN}>
+                <CartesianGrid vertical={false} stroke={CHART_GRID_STROKE} />
+                <XAxis dataKey="label" {...commonAxisProps} />
+                <YAxis tickFormatter={formatMoneyShort} {...commonAxisProps} width={44} />
+                <Tooltip content={<CustomTooltip />} cursor={{ stroke: CHART_COLORS.violet, strokeOpacity: 0.2 }} />
+                <Line
+                  dataKey="revenue"
+                  stroke={CHART_COLORS.violet}
+                  strokeWidth={2.5}
+                  dot={{ r: 3, fill: CHART_COLORS.violet, strokeWidth: 0 }}
+                  activeDot={{ r: 5 }}
+                />
+              </LineChart>
+            ) : (
+              <AreaChart data={data} margin={CHART_MARGIN}>
+                <defs>
+                  <linearGradient id="revenueAreaFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={CHART_COLORS.violet} stopOpacity={0.35} />
+                    <stop offset="95%" stopColor={CHART_COLORS.violet} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid vertical={false} stroke={CHART_GRID_STROKE} />
+                <XAxis dataKey="label" {...commonAxisProps} />
+                <YAxis tickFormatter={formatMoneyShort} {...commonAxisProps} width={44} />
+                <Tooltip content={<CustomTooltip />} cursor={{ stroke: CHART_COLORS.violet, strokeOpacity: 0.2 }} />
+                <Area
+                  dataKey="revenue"
+                  stroke={CHART_COLORS.violet}
+                  strokeWidth={2.5}
+                  fill="url(#revenueAreaFill)"
+                  dot={false}
+                />
+              </AreaChart>
+            )}
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   )
 }

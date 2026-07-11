@@ -16,12 +16,8 @@ interface SmallCardProps {
 function SmallCard({ label, value, icon, accent }: SmallCardProps) {
   return (
     <div
-      className="rounded-xl p-4 flex items-center gap-3"
-      style={{
-        backgroundColor: '#ffffff',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-        border: '1px solid rgba(0,0,0,0.04)',
-      }}
+      className="rounded-xl p-4 flex items-center gap-3 glass card-hover"
+      style={{ boxShadow: '0 8px 24px -12px rgba(76,29,149,0.12)' }}
     >
       <div
         className="flex items-center justify-center rounded-lg flex-shrink-0"
@@ -58,13 +54,7 @@ export default function TodayCards({ stats }: TodayCardsProps) {
         accent="#16a34a"
       />
       {stats.revenue_today > 0 && (
-        <div
-          className="col-span-2 rounded-xl px-4 py-3 flex items-center justify-between"
-          style={{
-            backgroundColor: '#0c4d6c',
-            boxShadow: '0 2px 8px rgba(12,77,108,0.25)',
-          }}
-        >
+        <div className="col-span-2 rounded-xl px-4 py-3 flex items-center justify-between accent-gradient accent-shadow">
           <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>Выручка сегодня</span>
           <span
             className="font-bold tabular-nums"

@@ -9,6 +9,7 @@ import { createClient } from '@/lib/supabase/client'
 import { getInitials, formatDateFull } from '@/lib/formatters'
 import { ROLE_LABELS } from '@/lib/constants'
 import type { UserRole } from '@/types'
+import { ProfileDialog } from '@/components/profile/ProfileDialog'
 
 const STATIC_PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Дашборд',
@@ -45,6 +46,7 @@ export default function Topbar({ onMenuClick }: { onMenuClick?: () => void }) {
   const pathname = usePathname()
   const { user } = useAuth()
   const [unreadCount, setUnreadCount] = useState(0)
+  const [profileOpen, setProfileOpen] = useState(false)
   const supabase = useMemo(() => createClient(), [])
 
   const role = user?.role as UserRole | undefined
@@ -86,10 +88,11 @@ export default function Topbar({ onMenuClick }: { onMenuClick?: () => void }) {
       className="flex-shrink-0 flex items-center px-5 gap-4"
       style={{
         height: 52,
-        backgroundColor: 'rgba(255,255,255,0.85)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(0,0,0,0.06)',
+        backgroundColor: 'rgba(255,255,255,0.55)',
+        backdropFilter: 'blur(20px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+        borderBottom: '1px solid rgba(124,58,237,0.08)',
+        boxShadow: '0 1px 0 rgba(255,255,255,0.6), 0 8px 24px -12px rgba(76,29,149,0.12)',
         position: 'sticky',
         top: 0,
         zIndex: 10,
@@ -165,16 +168,17 @@ export default function Topbar({ onMenuClick }: { onMenuClick?: () => void }) {
           )}
         </Link>
 
-        {/* Аватар пользователя */}
-        <div
-          className="flex items-center gap-2 cursor-default"
-          title={role ? ROLE_LABELS[role] : ''}
+        {/* Аватар пользователя — открывает профиль */}
+        <button
+          type="button"
+          onClick={() => setProfileOpen(true)}
+          className="flex items-center gap-2 rounded-lg px-1.5 py-1 -mx-1.5 transition-colors hover:bg-black/5"
+          title={role ? `${ROLE_LABELS[role]} · открыть профиль` : 'Открыть профиль'}
         >
           <div
-            className="flex items-center justify-center rounded-full text-white font-semibold flex-shrink-0"
+            className="flex items-center justify-center rounded-full text-white font-semibold flex-shrink-0 accent-gradient"
             style={{
               width: 28, height: 28,
-              backgroundColor: '#0c4d6c',
               fontSize: 10,
             }}
           >
@@ -186,8 +190,10 @@ export default function Topbar({ onMenuClick }: { onMenuClick?: () => void }) {
           >
             {user?.name?.split(' ')[0] ?? ''}
           </span>
-        </div>
+        </button>
       </div>
+
+      <ProfileDialog open={profileOpen} onOpenChange={setProfileOpen} />
     </header>
   )
 }

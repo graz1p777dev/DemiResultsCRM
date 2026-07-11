@@ -41,12 +41,8 @@ export default function PlanVsFactTable({ rows }: PlanVsFactTableProps) {
   if (rows.length === 0) {
     return (
       <div
-        className="flex items-center justify-center rounded-xl"
-        style={{
-          minHeight: 80,
-          backgroundColor: '#f9fafb',
-          border: '1px dashed #e5e7eb',
-        }}
+        className="flex items-center justify-center rounded-xl glass"
+        style={{ minHeight: 80, borderStyle: 'dashed' }}
       >
         <p style={{ fontSize: 13, color: '#a2b4c0' }}>Нет данных за этот месяц</p>
       </div>
@@ -54,14 +50,7 @@ export default function PlanVsFactTable({ rows }: PlanVsFactTableProps) {
   }
 
   return (
-    <div
-      className="overflow-x-auto rounded-xl"
-      style={{
-        border: '1px solid #f0f2f4',
-        backgroundColor: '#ffffff',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-      }}
-    >
+    <div className="overflow-x-auto rounded-xl glass">
       <table className="w-full min-w-[480px]">
         <thead>
           <tr style={{ borderBottom: '1px solid #f0f2f4' }}>
@@ -91,7 +80,7 @@ export default function PlanVsFactTable({ rows }: PlanVsFactTableProps) {
               }}
               className="transition-colors"
               onMouseEnter={e => {
-                (e.currentTarget as HTMLTableRowElement).style.backgroundColor = '#f9fafb'
+                (e.currentTarget as HTMLTableRowElement).style.backgroundColor = 'rgba(124,58,237,0.05)'
               }}
               onMouseLeave={e => {
                 (e.currentTarget as HTMLTableRowElement).style.backgroundColor = ''
